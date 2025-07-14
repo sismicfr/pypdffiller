@@ -28,5 +28,5 @@ jobs:
         uses: JamesIves/github-pages-deploy-action@v4.7.3
         with:
           BRANCH: gh-pages # The branch the action should deploy to.
-          FOLDER: docs/_build/sphin # The folder the action should deploy.
+          FOLDER: docs/_build/sphinx # The folder the action should deploy.
           CLEAN: true # Automatically remove deleted files from the deploy branch
