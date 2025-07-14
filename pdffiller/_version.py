@@ -1,0 +1,6 @@
+__author__ = "Jacques Raphanel"
+__copyright__ = "Copyright 2025 SISMIC"
+__email__ = "jraphanel@sismic.fr"
+__license__ = "MIT"
+__title__ = "pdffiller"
+__version__ = "0.0.1"

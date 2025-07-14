@@ -1,0 +1,33 @@
+name: Doc
+
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  PY_COLORS: 1
+
+jobs:
+  sphinx:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4.1.0
+      - name: Set up Python
+        uses: actions/setup-python@v4.7.0
+        with:
+          python-version: "3.11"
+      - name: Install dependencies
+        run: pip install tox
+      - name: Build doc
+        env:
+          TOXENV: doc
+        run: tox
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs/_build/sphinx/
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

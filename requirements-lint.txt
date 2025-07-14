@@ -1,0 +1,10 @@
+-r requirements.txt
+build==1.2.1
+black==24.10.0
+commitizen==3.31.0
+flake8==7.1.1
+isort==5.13.2
+mypy==1.13.0
+pylint==3.3.1
+types-PyYAML==6.0.12
+types-setuptools==75.5.0.20241116
