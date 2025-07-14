@@ -1,0 +1,334 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contributing &mdash; pdffiller v0.0.1</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css" />
+      <link rel="stylesheet" type="text/css" href="_static/custom.css" />
+      <link rel="stylesheet" type="text/css" href="_static/fonts.css" />
+      <link rel="stylesheet" type="text/css" href="_static/rtd_literal_block.css" />
+      <link rel="stylesheet" type="text/css" href="_static/rtd_theme_overrides.css" />
+      <link rel="stylesheet" type="text/css" href="_static/terminal_output.css" />
+
+  
+      <script src="_static/jquery.js"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+      <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+      <script src="_static/doctools.js"></script>
+      <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="CHANGELOG" href="changelog.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            pdffiller
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Basics</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="cli-usage.html">Getting started with the CLI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cli-commands.html">CLI reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">CHANGELOG</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Contributing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#commit-message-guidelines">Commit message guidelines</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#commit-message-header">Commit Message Header</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#type">Type</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scope">Scope</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#summary">Summary</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#commit-message-body">Commit Message Body</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#commit-message-footer">Commit Message Footer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#revert-commits">Revert commits</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#code-style">Code-Style</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#running-unit-tests">Running unit tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#releases">Releases</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">pdffiller</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Contributing</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/contributing.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="contributing">
+<h1>Contributing<a class="headerlink" href="#contributing" title="Permalink to this heading"></a></h1>
+<p>You can contribute to the project in multiple ways:</p>
+<ul class="simple">
+<li><p>Fix bugs</p></li>
+<li><p>Add unit and functional tests</p></li>
+<li><p>Everything else you can think of</p></li>
+</ul>
+<hr class="docutils" />
+<p>Before contributing, install <a class="reference external" href="https://tox.wiki/">tox</a> and <a class="reference external" href="https://pre-commit.com">pre-commit</a>.</p>
+<p>It is strongly recommended to have a global installation for <strong>tox</strong> and <strong>pre-commit</strong>, but it is also
+possible to use a virtual environment.</p>
+<p>Before contributing, please make sure you have <a class="reference external" href="https://pre-commit.com">pre-commit</a>
+installed and configured. This will help automate adhering to code style and commit
+message guidelines described below:</p>
+<div class="literal-block-wrapper docutils container" id="id2">
+<div class="code-block-caption"><span class="caption-text">Global user installation</span><a class="headerlink" href="#id2" title="Permalink to this code"></a></div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>pdffiller/
+pip3<span class="w"> </span>install<span class="w"> </span>--user<span class="w"> </span>pre-commit<span class="w"> </span>tox
+pre-commit<span class="w"> </span>install<span class="w"> </span>-t<span class="w"> </span>pre-commit<span class="w"> </span>-t<span class="w"> </span>commit-msg<span class="w"> </span>--install-hooks
+</pre></div>
+</div>
+</div>
+<div class="literal-block-wrapper docutils container" id="id3">
+<div class="code-block-caption"><span class="caption-text">Using venv</span><a class="headerlink" href="#id3" title="Permalink to this code"></a></div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>pypdffiller/
+make<span class="w"> </span>setup-venv<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">source</span><span class="w"> </span>.venv/bin/activate
+pip3<span class="w"> </span>install<span class="w"> </span>--user<span class="w"> </span>pre-commit<span class="w"> </span>tox
+pre-commit<span class="w"> </span>install<span class="w"> </span>-t<span class="w"> </span>pre-commit<span class="w"> </span>-t<span class="w"> </span>commit-msg<span class="w"> </span>--install-hooks
+</pre></div>
+</div>
+</div>
+<p>Please provide your patches as GitHub pull requests. Thanks!</p>
+<section id="commit-message-guidelines">
+<h2>Commit message guidelines<a class="headerlink" href="#commit-message-guidelines" title="Permalink to this heading"></a></h2>
+<p>We enforce commit messages to be formatted using the <a class="reference external" href="https://www.conventionalcommits.org/">Conventional Commits</a>.</p>
+<p>We have very precise rules over how our Git commit messages must be formatted.
+This format leads to <strong>easier to read commit history</strong>.</p>
+<p>Each commit message consists of a <strong>header</strong>, a <strong>body</strong>, and a <strong>footer</strong>.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>&lt;header&gt;
+&lt;BLANK LINE&gt;
+&lt;body&gt;
+&lt;BLANK LINE&gt;
+&lt;footer&gt;
+</pre></div>
+</div>
+<p>The <cite>header</cite> is mandatory and must conform to the <a class="reference internal" href="#commit-message-header">Commit Message Header</a> format.</p>
+<p>The <cite>body</cite> is <em>optional</em> for all commits except for those of type “docs” for <strong>main</strong> branch only, else it is <em>optional</em>
+When the body is present it must be at least 20 characters long and must conform to the <a class="reference internal" href="#commit-message-body">Commit Message Body</a> format.</p>
+<p>The <cite>footer</cite> is optional. The <a class="reference internal" href="#commit-message-footer">Commit Message Footer</a> format describes what the footer is used for and the structure it must have.</p>
+<section id="commit-message-header">
+<h3>Commit Message Header<a class="headerlink" href="#commit-message-header" title="Permalink to this heading"></a></h3>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>&lt;type&gt;(&lt;scope&gt;): &lt;short summary&gt;
+│       │             │
+│       │             └─⫸ Summary in present tense. Not capitalized. No period at the end.
+│       │
+│       └─⫸ Commit Scope: cli|pdf|changelog|packaging
+│
+└─⫸ Commit Type: ci|chore|docs|feat|fix|perf|refactor|style|test
+</pre></div>
+</div>
+<p>The <cite>&lt;type&gt;</cite> and <cite>&lt;summary&gt;</cite> fields are mandatory, the <cite>(&lt;scope&gt;)</cite> field is optional.</p>
+<section id="type">
+<h4>Type<a class="headerlink" href="#type" title="Permalink to this heading"></a></h4>
+<p>Must be one of the following:</p>
+<ul class="simple">
+<li><p><strong>ci</strong>: Changes to our CI configuration files and scripts (examples: GitHub actions)</p></li>
+<li><p><strong>chore</strong>: Changes to the build process or auxiliary tools and libraries such as documentation generation</p></li>
+<li><p><strong>docs</strong>: Documentation only changes</p></li>
+<li><p><strong>feat</strong>: A new feature</p></li>
+<li><p><strong>fix</strong>: A bug fix</p></li>
+<li><p><strong>perf</strong>: A code change that improves performance</p></li>
+<li><p><strong>refactor</strong>: A code change that neither fixes a bug nor adds a feature</p></li>
+<li><p><strong>style</strong>: Code modification which does add a new feature nor fix a bug</p></li>
+<li><p><strong>test</strong>: Adding missing tests or correcting existing tests</p></li>
+</ul>
+</section>
+<section id="scope">
+<h4>Scope<a class="headerlink" href="#scope" title="Permalink to this heading"></a></h4>
+<p>The scope should be the name of the npm package affected (as perceived by the person reading the changelog generated from commit messages).</p>
+<p>The following is the list of supported scopes:</p>
+<ul class="simple">
+<li><p><cite>cli</cite></p></li>
+<li><p><cite>pdf</cite></p></li>
+</ul>
+<p>There are currently a few exceptions to the “use package name” rule:</p>
+<ul class="simple">
+<li><p><cite>packaging</cite>: used for changes that change the pyhton package layout in all of our packages, e.g. changes to bundles, etc.</p></li>
+<li><p><cite>changelog</cite>: used for updating the release notes in CHANGELOG.md or its associated template file</p></li>
+</ul>
+</section>
+<section id="summary">
+<h4>Summary<a class="headerlink" href="#summary" title="Permalink to this heading"></a></h4>
+<p>Use the summary field to provide a succinct description of the change:</p>
+<ul class="simple">
+<li><p>use the imperative, present tense: “change” not “changed” nor “changes”</p></li>
+<li><p>don’t capitalize the first letter</p></li>
+<li><p>no dot (.) at the end</p></li>
+</ul>
+</section>
+</section>
+<section id="commit-message-body">
+<h3>Commit Message Body<a class="headerlink" href="#commit-message-body" title="Permalink to this heading"></a></h3>
+<p>Just as in the summary, use the imperative, present tense: “fix” not “fixed” nor “fixes”.</p>
+<p>Explain the motivation for the change in the commit message body. This commit message should explain _why_ you are making the change.
+You can include a comparison of the previous behavior with the new behavior in order to illustrate the impact of the change.</p>
+</section>
+<section id="commit-message-footer">
+<h3>Commit Message Footer<a class="headerlink" href="#commit-message-footer" title="Permalink to this heading"></a></h3>
+<p>The footer can contain information about breaking changes and deprecations and is also the place to reference GitHub issues, Jira tickets, and other PRs that this commit closes or is related to.
+For example:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>BREAKING CHANGE: &lt;breaking change summary&gt;
+&lt;BLANK LINE&gt;
+&lt;breaking change description + migration instructions&gt;
+&lt;BLANK LINE&gt;
+&lt;BLANK LINE&gt;
+Fixes #&lt;issue number&gt;
+</pre></div>
+</div>
+<p>or</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>DEPRECATED: &lt;what is deprecated&gt;
+&lt;BLANK LINE&gt;
+&lt;deprecation description + recommended update path&gt;
+&lt;BLANK LINE&gt;
+&lt;BLANK LINE&gt;
+Closes #&lt;pr number&gt;
+</pre></div>
+</div>
+<p>Breaking Change section should start with the phrase “BREAKING CHANGE: “ followed by a summary of the breaking change, a blank line, and a detailed description of the breaking change that also includes migration instructions.</p>
+<p>Similarly, a Deprecation section should start with “DEPRECATED: “ followed by a short description of what is deprecated, a blank line, and a detailed description of the deprecation that also mentions the recommended update path.</p>
+</section>
+<section id="revert-commits">
+<h3>Revert commits<a class="headerlink" href="#revert-commits" title="Permalink to this heading"></a></h3>
+<p>If the commit reverts a previous commit, it should begin with <code class="docutils literal notranslate"><span class="pre">revert:</span></code>, followed by the header of the reverted commit.</p>
+<p>The content of the commit message body should contain:</p>
+<ul class="simple">
+<li><p>information about the SHA of the commit being reverted in the following format: <cite>This reverts commit &lt;SHA&gt;</cite>,</p></li>
+<li><p>a clear description of the reason for reverting the commit message.</p></li>
+</ul>
+</section>
+</section>
+<section id="code-style">
+<h2>Code-Style<a class="headerlink" href="#code-style" title="Permalink to this heading"></a></h2>
+<p>We use black as code formatter, so you’ll need to format your changes using the
+<a class="reference external" href="https://github.com/python/black">black code formatter</a>. Pre-commit hooks will validate/format your code
+when committing. You can then stage any changes <code class="docutils literal notranslate"><span class="pre">black</span></code> added if the commit failed.</p>
+<p>To format your code according to our guidelines before committing, run:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>pypdffiller/
+pip3<span class="w"> </span>install<span class="w"> </span>--user<span class="w"> </span>black
+black<span class="w"> </span>.
+</pre></div>
+</div>
+<p>or you can use make to run <strong>black</strong> using <strong>tox</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>pypdffiller/
+make<span class="w"> </span>setup-env
+<span class="nb">source</span><span class="w"> </span>.venv/scripts/activate
+make<span class="w"> </span>black
+</pre></div>
+</div>
+</section>
+<section id="running-unit-tests">
+<h2>Running unit tests<a class="headerlink" href="#running-unit-tests" title="Permalink to this heading"></a></h2>
+<p>Before submitting a pull request make sure that the tests and lint checks still succeed with
+your change. Unit tests and functional tests run in GitHub Actions and
+passing checks are mandatory to get merge requests accepted.</p>
+<p>Please write new unit tests with pytest.</p>
+<p>You need to install <code class="docutils literal notranslate"><span class="pre">tox</span></code> using one of the following approach:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">pip3</span> <span class="pre">install</span> <span class="pre">--user</span> <span class="pre">tox</span></code> to install as user packages from global python installation:</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">setup-env</span> <span class="pre">&amp;&amp;</span> <span class="pre">source</span> <span class="pre">.venv/bin/activate</span></code> to create and activate a local virtual environment</p></li>
+</ul>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># run unit tests using your installed python3, and all lint checks:</span>
+tox<span class="w"> </span>-s
+
+<span class="c1"># run unit tests for all supported python3 versions, and all lint checks:</span>
+tox
+
+<span class="c1"># run tests in one environment only:</span>
+tox<span class="w"> </span>-epy311
+
+<span class="c1"># build the documentation, the result will be generated in</span>
+<span class="c1"># doc/_build/sphinx/html/</span>
+tox<span class="w"> </span>-edoc
+</pre></div>
+</div>
+</section>
+<section id="releases">
+<h2>Releases<a class="headerlink" href="#releases" title="Permalink to this heading"></a></h2>
+<p>The release workflow can be run manually by maintainers to publish urgent
+fixes, either on GitHub or using the <code class="docutils literal notranslate"><span class="pre">gh</span></code> CLI with <code class="docutils literal notranslate"><span class="pre">gh</span> <span class="pre">workflow</span> <span class="pre">run</span> <span class="pre">release.yml</span></code>.</p>
+<p><strong>Note:</strong> As a maintainer, this means you should carefully review commit messages
+used by contributors in their pull requests. If scopes such as <code class="docutils literal notranslate"><span class="pre">fix</span></code> and <code class="docutils literal notranslate"><span class="pre">feat</span></code>
+are applied to trivial commits not relevant to end users, it’s best to squash their
+pull requests and summarize the addition in a single conventional commit.
+This avoids triggering incorrect version bumps and releases without functional changes.</p>
+<p>The release workflow uses <a class="reference external" href="https://python-semantic-release.readthedocs.io">python-semantic-release</a> and does the following:</p>
+<ul class="simple">
+<li><p>Bumps the version in <code class="docutils literal notranslate"><span class="pre">_version.py</span></code> and adds an entry in <code class="docutils literal notranslate"><span class="pre">CHANGELOG.md</span></code>,</p></li>
+<li><p>Commits and tags the changes, then pushes to the master branch as the <code class="docutils literal notranslate"><span class="pre">github-actions</span></code> user,</p></li>
+<li><p>Creates a release from the tag and adds the changelog entry to the release notes,</p></li>
+<li><p>Uploads the package as assets to the GitHub release,</p></li>
+<li><p>Uploads the package to PyPI.</p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="changelog.html" class="btn btn-neutral float-left" title="CHANGELOG" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright Copyright 2025 SISMIC.</p>
+  </div>
+
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
