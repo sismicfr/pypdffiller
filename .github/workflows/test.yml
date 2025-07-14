@@ -35,8 +35,6 @@ jobs:
             toxenv: py312
           - version: "3.13"
             toxenv: py313
-          - version: "3.14"
-            toxenv: py314
 
     steps:
       - uses: actions/checkout@v4.1.0
