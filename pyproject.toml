@@ -32,10 +32,10 @@ dependencies = ["pypdf", "colorama", "pyyaml"]
 pdffiller = "pdffiller.cli:main"
 
 [project.urls]
-changelog = "https://github.com/sismicfr/pdffiller/blob/main/CHANGELOG.md"
-homepage = "https://github.com/sismicfr/pdffiller"
-issues = "https://github.com/sismicfr/pdffiller/issues"
-repository = "http://github.com/sismicfr/pdffiller.git"
+changelog = "https://github.com/sismicfr/pypdffiller/blob/main/CHANGELOG.md"
+homepage = "https://github.com/sismicfr/pypdffiller"
+issues = "https://github.com/sismicfr/pypdffiller/issues"
+repository = "http://github.com/sismicfr/pypdffiller.git"
 
 [tool.black]
 line-length = 100
