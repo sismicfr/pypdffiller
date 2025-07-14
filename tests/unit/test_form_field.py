@@ -18,6 +18,7 @@ def test_valid_pdf(test_data_dir):
     assert schema[4]["FieldOptions"][1] == "Off"
     assert schema[4]["FieldValue"] == "Married"
 
+
 def test_invalid_pdf(test_data_dir):
     reader = Pdf(str(test_data_dir / "empty.pdf"))
     assert len(reader.widgets) == 0
