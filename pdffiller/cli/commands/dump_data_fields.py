@@ -70,6 +70,6 @@ def dump_data_fields(parser: PdfFillerArgumentParser, *args: Any) -> Any:
     except Exception as exg:  # pylint: disable=broad-except # pragma: no cover
         output.error(f"unexpected error when adding {opts.file} with the following error:")
         output.error(exg)
-        raise AbortExecution(ERROR_ENCOUNTERED)
+        raise AbortExecution(ERROR_ENCOUNTERED) from exg
 
     return None

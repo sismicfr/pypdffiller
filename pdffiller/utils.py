@@ -1,7 +1,7 @@
 import os
 from pathlib import Path
 
-from pdffiller.typing import Any, PathLike, Optional
+from pdffiller.typing import Any, Optional, PathLike
 
 
 def str_to_path(path: Optional[PathLike]) -> Any:

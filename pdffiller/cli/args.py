@@ -1,7 +1,7 @@
 import argparse
 
 from pdffiller.cli.command import BaseCommand
-from pdffiller.typing import Any, Union, Optional
+from pdffiller.typing import Any, Optional, Union
 
 
 def add_global_arguments(

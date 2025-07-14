@@ -3,10 +3,10 @@ import os
 
 import yaml
 
-from pdffiller.cli.once_argument import OnceArgument
 from pdffiller.cli.args import add_global_arguments
 from pdffiller.cli.boolean_action import BooleanAction
 from pdffiller.cli.command import pdffiller_command, PdfFillerArgumentParser
+from pdffiller.cli.once_argument import OnceArgument
 from pdffiller.exceptions import (
     AbortExecution,
     CommandLineError,
@@ -86,20 +86,17 @@ def fill_form(parser: PdfFillerArgumentParser, *args: Any) -> Any:
         raise FileNotExistsError(opts.data)
 
     input_data: Dict[str, Union[str, int, float, bool]] = {}
-    with open(opts.data, "r") as stream:
+    with open(opts.data, "r", encoding="utf-8") as stream:
         try:
             if os.path.splitext(opts.data)[1] in [".yaml", ".yml"]:
                 input_data = yaml.safe_load(stream)
             else:
                 input_data = json.load(stream)
-        except Exception:  # pylint: disable=broad-except
+        except Exception as exg:  # pylint: disable=broad-except
             output.error(f"Failed to load {opts.data} input data file")
-            AbortExecution(ERROR_ENCOUNTERED)
+            raise AbortExecution(ERROR_ENCOUNTERED) from exg
 
     try:
-        import pprint
-
-        pprint.pprint(input_data)
         pdf = Pdf(opts.file)
         pdf.fill(opts.file, opts.output, input_data, opts.flatten)
     except PdfFillerException as exp:
@@ -107,6 +104,4 @@ def fill_form(parser: PdfFillerArgumentParser, *args: Any) -> Any:
     except Exception as exg:  # pylint: disable=broad-except # pragma: no cover
         output.error(f"unexpected error when adding {opts.file} with the following error:")
         output.error(exg)
-        raise AbortExecution(ERROR_ENCOUNTERED)
-
-    return None
+        raise AbortExecution(ERROR_ENCOUNTERED) from exg

@@ -13,6 +13,7 @@ methods for interacting with its form fields and content.
 from collections import OrderedDict
 
 from pypdf import PdfReader, PdfWriter
+from pypdf.errors import PyPdfError
 from pypdf.generic import (
     ArrayObject,
     DictionaryObject,
@@ -20,7 +21,6 @@ from pypdf.generic import (
     NumberObject,
     TextStringObject,
 )
-from pypdf.errors import PyPdfError
 
 from pdffiller.io.output import PdfFillerOutput
 
@@ -40,7 +40,6 @@ from .widgets.base import Widget
 from .widgets.checkbox import CheckBoxWidget
 from .widgets.radio import RadioWidget
 from .widgets.text import TextWidget
-from . import utils
 
 
 class PdfAttributes:  # pylint: disable=too-few-public-methods
@@ -131,7 +130,6 @@ class Pdf:
         except PyPdfError as ex:
             PdfFillerOutput().error(str(ex))
             return
-            
 
         for i, page in enumerate(pdf_file.pages):
             widgets: Optional[ArrayObject] = page.annotations
@@ -158,13 +156,13 @@ class Pdf:
                 if widget_type == "radio":
                     if value:
                         value = value[1:]
-                    choices: List[str] = []
+                    choices = []
                     if PdfAttributes.Kids in widget:
                         for each in widget[PdfAttributes.Kids]:
                             for each in each[PdfAttributes.AP][PdfAttributes.N].keys():
                                 if each[1:] not in choices:
                                     choices.append(each[1:])
-                            
+
                 elif widget_type == "checkbox":
 
                     if (

@@ -34,6 +34,7 @@ pdffiller fill_form
 Fills the single input PDF's form fields with the data from an input **json** or **yaml** file format. Enter the data filename
 
 .. code-block:: text
+
     pdffiller fill-form -d input_data.json -o output.pdf --flatten input.pdf
 
 The ``pdffiller fill-form`` command will:
