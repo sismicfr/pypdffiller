@@ -24,10 +24,9 @@ jobs:
         env:
           TOXENV: doc
         run: tox
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+      - name: Deploy
+        uses: JamesIves/github-pages-deploy-action@v4.7.3
         with:
-          path: docs/_build/sphinx/
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+          BRANCH: gh-pages # The branch the action should deploy to.
+          FOLDER: docs/_build/sphin # The folder the action should deploy.
+          CLEAN: true # Automatically remove deleted files from the deploy branch
