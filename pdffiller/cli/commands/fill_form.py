@@ -30,6 +30,7 @@ def fill_form(parser: PdfFillerArgumentParser, *args: Any) -> Any:
     Fill an input PDF's form fields with the data from
     """
     options_group = parser.add_argument_group("options")
+
     options_group.add_argument(
         "-d",
         "--data",
@@ -37,6 +38,17 @@ def fill_form(parser: PdfFillerArgumentParser, *args: Any) -> Any:
         type=str,
         help="""Path to the data file defining the field/value pairs.
                 It can be a json or yaml file format.
+                It can be also - to read data file from stdin with JSON format.
+             """,
+        action=OnceArgument,
+    )
+
+    options_group.add_argument(
+        "-i",
+        "--input-data",
+        metavar="DATA",
+        type=str,
+        help="""Input data with JSON format defining the field/value pairs.
              """,
         action=OnceArgument,
     )

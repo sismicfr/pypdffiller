@@ -18,7 +18,9 @@ pdffiller fill_form
       -d DATA_PATH, --data DATA_PATH
                             Path to the data file defining the field/value pairs.
                             It can be a json or yaml file format.
-                            It can be also - to read data file from stdin.
+                            It can be also - to read data file from stdin with JSON format.
+      -i JSON_DATA, --input-data JSON_DATA
+                            Input data with JSON format defining the field/value pairs.
       -o OUTPUT_PATH, --output OUTPUT_PATH
                             Path to the output PDF file.
       -f, --flatten, --no-flatten
@@ -40,6 +42,7 @@ When **-** is used to define input data file, **pdffiller** will read the data f
 
     pdffiller fill-form -d input_data.json -o output.pdf --flatten input.pdf
     cat data.json | pdffiller fill-form -d - -o output.pdf --flatten input.pdf
+    pdffiller fill-form -i '{"field_1": "text value", "radio_1": 1}' -o output.pdf --flatten input.pdf
 
 The ``pdffiller fill-form`` command will:
 
