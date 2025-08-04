@@ -105,6 +105,9 @@ options:
   -d DATA_PATH, --data DATA_PATH
                         Path to the data file defining the field/value pairs.
                         It can be a json or yaml file format.
+                        It can be also - to read data file from stdin with JSON format.
+  -i JSON_DATA, --input-data JSON_DATA
+                        Input data with JSON format defining the field/value pairs.
   -o OUTPUT_PATH, --output OUTPUT_PATH
                         Path to the output PDF file.
   -f, --flatten, --no-flatten
@@ -119,8 +122,11 @@ options:
   -h, --help            show this help message and exit
 </pre></div>
 </div>
-<p>Fills the single input PDF’s form fields with the data from an input <strong>json</strong> or <strong>yaml</strong> file format. Enter the data filename</p>
+<p>Fills the single input PDF’s form fields with the data from an input <strong>json</strong> or <strong>yaml</strong> file format.</p>
+<p>When <strong>-</strong> is used to define input data file, <strong>pdffiller</strong> will read the data from <em>stdin</em> and assume that the input data are given as JSON format.</p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>pdffiller fill-form -d input_data.json -o output.pdf --flatten input.pdf
+cat data.json | pdffiller fill-form -d - -o output.pdf --flatten input.pdf
+pdffiller fill-form -i &#39;{&quot;field_1&quot;: &quot;text value&quot;, &quot;radio_1&quot;: 1}&#39; -o output.pdf --flatten input.pdf
 </pre></div>
 </div>
 <p>The <code class="docutils literal notranslate"><span class="pre">pdffiller</span> <span class="pre">fill-form</span></code> command will:</p>
