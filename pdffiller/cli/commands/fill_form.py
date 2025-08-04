@@ -1,5 +1,7 @@
+import html
 import json
 import os
+import sys
 
 import yaml
 
@@ -80,21 +82,35 @@ def fill_form(parser: PdfFillerArgumentParser, *args: Any) -> Any:
     if not opts.data:
         raise CommandLineError("no data file path given")
 
-    if not os.path.isfile(opts.file):
-        raise FileNotExistsError(opts.file)
-    if not os.path.isfile(opts.data):
-        raise FileNotExistsError(opts.data)
-
     input_data: Dict[str, Union[str, int, float, bool]] = {}
-    with open(opts.data, "r", encoding="utf-8") as stream:
+    if "-" != opts.data:
+        if not os.path.isfile(opts.file):
+            raise FileNotExistsError(opts.file)
+        if not os.path.isfile(opts.data):
+            raise FileNotExistsError(opts.data)
+
+        with open(opts.data, "r", encoding="utf-8") as stream:
+            try:
+                if os.path.splitext(opts.data)[1] in [".yaml", ".yml"]:
+                    input_data = yaml.safe_load(stream)
+                else:
+                    input_data = json.load(stream)
+            except Exception as exg:  # pylint: disable=broad-except
+                output.error(f"Failed to load {opts.data} input data file")
+                raise AbortExecution(ERROR_ENCOUNTERED) from exg
+    elif not os.isatty(sys.stdin.fileno()):
         try:
-            if os.path.splitext(opts.data)[1] in [".yaml", ".yml"]:
-                input_data = yaml.safe_load(stream)
-            else:
-                input_data = json.load(stream)
+            input_data = json.load(sys.stdin)
         except Exception as exg:  # pylint: disable=broad-except
-            output.error(f"Failed to load {opts.data} input data file")
+            output.error(f"Failed to load {opts.data} input data file : " + str(exg))
             raise AbortExecution(ERROR_ENCOUNTERED) from exg
+
+    if isinstance(input_data, list) and isinstance(input_data[0], dict):
+        input_dict = {}
+        for field in input_data:
+            if "name" in field and "value" in field:
+                input_dict[html.unescape(field["name"])] = html.unescape(field["value"])
+        input_data = input_dict
 
     try:
         pdf = Pdf(opts.file)
