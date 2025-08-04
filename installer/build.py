@@ -28,7 +28,6 @@ if filescript_dir not in sys.path:
     sys.path.insert(0, filescript_dir)
 
 from pdffiller import __version__  # noqa: E402 # pylint: disable=wrong-import-position
-from pdffiller.typing import Any  # noqa: E402 # pylint: disable=wrong-import-position
 
 
 def _check_build_result(dist_folder: str) -> str:
@@ -106,10 +105,7 @@ def build_installer(source_folder: str, work_folder: str) -> str:
     command = "pyinstaller"
     exe_name = "pdffiller"
 
-    def _on_rm_tree_error(*args: Any) -> None:
-        print(f"Unable to remove old folder: {args[0]}")
-
-    shutil.rmtree(build_folder, onerror=_on_rm_tree_error)
+    shutil.rmtree(build_folder)
 
     if not os.path.exists(build_folder):
         os.makedirs(build_folder, exist_ok=True)
