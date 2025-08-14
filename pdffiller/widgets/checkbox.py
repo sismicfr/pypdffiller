@@ -49,5 +49,4 @@ class CheckBoxWidget(Widget):
         Returns:
             dict: A dictionary representing the schema definition.
         """
-        print(self.name + "=" + str(self.choices))
         return {"FieldType": "checkbox", "FieldOptions": self.choices, **super().schema_definition}
