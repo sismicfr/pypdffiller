@@ -67,6 +67,10 @@ jobs:
       needs: [release]
       runs-on: ubuntu-latest
       concurrency: debian-build
+      permissions:
+        id-token: write
+        contents: write
+      environment: pypi.org
       if: github.repository == 'sismicfr/pypdffiller' && needs.release.outputs.released == 'true'
       steps:
         - uses: actions/checkout@v4
@@ -85,6 +89,10 @@ jobs:
       needs: [release]
       runs-on: ubuntu-latest
       concurrency: debian-build
+      permissions:
+        id-token: write
+        contents: write
+      environment: pypi.org
       if: github.repository == 'sismicfr/pypdffiller' && needs.release.outputs.released == 'true'
       steps:
         - uses: actions/checkout@v4
@@ -104,6 +112,10 @@ jobs:
       needs: [release, debian-build, alpine-build]
       runs-on: ubuntu-latest
       concurrency: publish
+      permissions:
+        id-token: write
+        contents: write
+      environment: pypi.org
       steps:
         - uses: actions/checkout@v4
           with:
