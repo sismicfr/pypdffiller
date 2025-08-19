@@ -101,7 +101,7 @@ def build_installer(source_folder: str, work_folder: str) -> str:
     command = "pyinstaller"
     exe_name = "pdffiller"
 
-    shutil.rmtree(build_folder)
+    shutil.rmtree(build_folder, True)
 
     if not os.path.exists(build_folder):
         os.makedirs(build_folder, exist_ok=True)

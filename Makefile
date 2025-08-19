@@ -22,7 +22,7 @@ else
 	PATH_SEP = /
 endif
 
-VENV_BIN_DIR := .venv$(PATH_SEP)$(VENV_BIN_DIR)
+VENV_BIN_DIR := .venv$(OSNAME)$(PATH_SEP)$(VENV_BIN_DIR)
 VENV_ACTIVATE = $(VENV_CMD) $(VENV_BIN_DIR)$(PATH_SEP)$(VENV_INIT)
 VENV_ACTIVATE_CMD := $(VENV_ACTIVATE) && 
 
@@ -44,7 +44,7 @@ MNOPD = --no-print-directory
 
 ## -- Global makefile rules ---------------------------------------------------
 all: | $(VENV_BIN_DIR) ## Setup local environment with pre-commit and tox
-	$(NOISE)env PATH="$(PROJECT_DIR)/.venv/$(VENV_BIN_DIR):$(PATH)" hash tox$(EXE_EXT) pre-commit$(EXE_EXT) > /dev/null 2>&1  || $(MAKE) $(MFLAGS) $(MNOPD) setup
+	$(NOISE)env PATH="$(PROJECT_DIR)/$(VENV_BIN_DIR):$(PATH)" hash tox$(EXE_EXT) pre-commit$(EXE_EXT) > /dev/null 2>&1  || $(MAKE) $(MFLAGS) $(MNOPD) setup
 
 pkgs: ## Generate pythong packages
 	$(NOISE)$(PYTHON) setup.py sdist
@@ -58,16 +58,16 @@ include .make/parameters.mk
 setup: $(TOX_EXE) $(PRECOMMIT_EXE) ## Setup local environment with pre-commit and tox
 	@$(call infomsg,"venv can be activate using $(VENV_ACTIVATE)")
 
-$(TOX_EXE): | $(VENV_BIN_DIR)
+$(TOX_EXE): | $(VENV_BIN_DIR)/$(VENV_INIT)
 	$(call actionmsg, installing $@ ...)
 	$(NOISE)$(VENV_ACTIVATE_CMD) $(PYTHON) -m pip install $(basename $(@F))
 
-$(PRECOMMIT_EXE): | $(VENV_BIN_DIR)
+$(PRECOMMIT_EXE): | $(VENV_BIN_DIR)/$(VENV_INIT)
 	$(call actionmsg, installing $@ ...)
 	$(NOISE)$(VENV_ACTIVATE_CMD) $(PYTHON) -m pip install pre-commit
 
-$(VENV_BIN_DIR):
-	$(NOISE)$(PYTHON) -m venv .venv
+$(VENV_BIN_DIR)/$(VENV_INIT):
+	$(NOISE)$(PYTHON) -m venv .venv$(OSNAME)
 
 ## -- Tox ---------------------------------------------------------------------
 
@@ -106,7 +106,7 @@ exe: tox
 	$(NOISE)$(ECHOCMD)docker build -f .docker/Dockerfile-$(OSNAME) -t build-$(OSNAME) $(DOCKER_BUILD_ARGS) .
 
 .docker-build-exe:
-	$(NOISE)$(ECHOCMD)docker run --rm -v .:/app build-$(OSNAME) make exe
+	$(NOISE)$(ECHOCMD)docker run --rm -v .:/app build-$(OSNAME) make exe OSNAME=$(OSNAME)
 
 debian-exe: OSNAME=debian	## Build executable on Debian
 debian-exe: .docker-build
