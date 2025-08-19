@@ -18,7 +18,7 @@ Use ``pip`` to install the latest stable version of ``pypdffiller``:
 
 .. code-block:: console
 
-   $ pip install --upgrade pypdffiller
+   $ pip install --upgrade python-pdffiller
 
 The current development version is available on both `GitHub.com
 <https://github.com/sismicfr/pypdffiller>`__ and can be
