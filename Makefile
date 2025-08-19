@@ -51,6 +51,7 @@ pkgs: ## Generate pythong packages
 	$(NOISE)$(PYTHON) setup.py bdist_wheel --universal
 
 include .make/help.mk
+include .make/parameters.mk
 
 ## -- Setup -------------------------------------------------------------------
 
@@ -100,3 +101,17 @@ doc: tox
 
 exe: e=installer ## Build the executable
 exe: tox
+
+.docker-build:
+	$(NOISE)$(ECHOCMD)docker build -f .docker/Dockerfile-$(OSNAME) -t build-$(OSNAME) $(DOCKER_BUILD_ARGS) .
+
+.docker-build-exe:
+	$(NOISE)$(ECHOCMD)docker run --rm -v .:/app build-$(OSNAME) make exe
+
+debian-exe: OSNAME=debian	## Build executable on Debian
+debian-exe: .docker-build
+debian-exe: .docker-build-exe
+
+alpine-exe: OSNAME=alpine	## Build executable on Alpine
+alpine-exe: .docker-build
+alpine-exe: .docker-build-exe

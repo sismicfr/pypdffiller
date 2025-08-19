@@ -1,0 +1,15 @@
+FROM python:alpine3.21
+
+RUN apk add -U make binutils shadow
+
+# Customize user id and group id
+ARG USER_ID=1000
+ARG GROUP_ID=1000
+
+# use same uid & gid as the current user from host
+RUN addgroup -g ${GROUP_ID} builder
+RUN adduser -u ${USER_ID} -D -S -G builder builder
+
+USER builder
+
+WORKDIR /app

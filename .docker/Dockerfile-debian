@@ -1,0 +1,17 @@
+FROM python:slim-bullseye
+
+RUN DEBIAN_FRONTEND=noninteractive \
+    && apt-get update \
+    && apt-get install -y make binutils
+
+# Customize user id and group id
+ARG USER_ID=1000
+ARG GROUP_ID=1000
+
+# use same uid & gid as the current user from host
+RUN usermod --non-unique --uid ${USER_ID} www-data \
+    && groupmod --non-unique --gid ${GROUP_ID} www-data
+
+USER www-data
+
+WORKDIR /app

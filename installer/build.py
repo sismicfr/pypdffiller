@@ -41,10 +41,6 @@ def _check_build_result(dist_folder: str) -> str:
     return pdffiller_bin
 
 
-def _is_github_action() -> bool:
-    return os.environ.get("GITHUB_ACTIONS", None) is not None
-
-
 def _windows_rc_file(version: str) -> str:
     template = """# UTF-8
 #
@@ -96,9 +92,9 @@ VSVersionInfo(
 
 def build_installer(source_folder: str, work_folder: str) -> str:
     """Build required executable"""
-    if _is_github_action():
-        # Install pyinstaller
-        subprocess.call("pip install pyinstaller", shell=True)
+    # Install pyinstaller
+    subprocess.call("pip install pyinstaller", shell=True)
+    subprocess.call("pip install distro", shell=True)
 
     build_folder = os.path.join(work_folder, "_build")
     dist_folder = os.path.join(work_folder, "dist")
@@ -140,19 +136,20 @@ def build_installer(source_folder: str, work_folder: str) -> str:
 
     # Build required executable
     exe_path = _check_build_result(dist_folder)
-    if _is_github_action():
-        # Create archive for release notes
-        file_path = os.path.splitext(exe_path)[0]
-        if platform.system() == "Windows":
-            with ZipFile(file_path + "-win-64.zip", "w") as zip_file:
-                zip_file.write(exe_path, arcname=os.path.basename(exe_path))
-        elif platform.system() == "Linux":
-            with tarfile.open(file_path + "-linux-64.tar.gz", "w:gz") as tar_file:
-                tar_file.add(exe_path, arcname=os.path.basename(exe_path))
-        else:
-            with tarfile.open(file_path + "-macos-64.tar.gz", "w:gz") as tar_file:
-                tar_file.add(exe_path, arcname=os.path.basename(exe_path))
-    return os.path.abspath(os.path.join(dist_folder, "pdffiller"))
+
+    # Create archive for release notes
+    file_path = os.path.splitext(exe_path)[0]
+    if platform.system() == "Windows":
+        with ZipFile(file_path + "-win-64.zip", "w") as zip_file:
+            zip_file.write(exe_path, arcname=os.path.basename(exe_path))
+    elif platform.system() == "Linux":
+        import distro
+        with tarfile.open(file_path + "-"+distro.id()+"-64.tar.gz", "w:gz") as tar_file:
+            tar_file.add(exe_path, arcname=os.path.basename(exe_path))
+    else:
+        with tarfile.open(file_path + "-macos-64.tar.gz", "w:gz") as tar_file:
+            tar_file.add(exe_path, arcname=os.path.basename(exe_path))
+    return os.path.abspath(exe_path)
 
 
 if __name__ == "__main__":
