@@ -143,8 +143,9 @@ def build_installer(source_folder: str, work_folder: str) -> str:
         with ZipFile(file_path + "-win-64.zip", "w") as zip_file:
             zip_file.write(exe_path, arcname=os.path.basename(exe_path))
     elif platform.system() == "Linux":
-        import distro
-        with tarfile.open(file_path + "-"+distro.id()+"-64.tar.gz", "w:gz") as tar_file:
+        import distro  # pylint: disable=import-outside-toplevel
+
+        with tarfile.open(file_path + "-" + distro.id() + "-64.tar.gz", "w:gz") as tar_file:
             tar_file.add(exe_path, arcname=os.path.basename(exe_path))
     else:
         with tarfile.open(file_path + "-macos-64.tar.gz", "w:gz") as tar_file:

@@ -8,3 +8,4 @@ mypy==1.13.0
 pylint==3.3.1
 types-PyYAML==6.0.12
 types-setuptools==75.5.0.20241116
+distro
