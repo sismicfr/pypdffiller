@@ -511,12 +511,6 @@ class Pdf:
         """
         if widget_type == "radio":
             if PdfAttributes.Parent in annot:
-                print(
-                    "parent=",
-                    cast(Any, annot[NameObject(PdfAttributes.Parent)]).get(
-                        NameObject(PdfAttributes.Ff), 0
-                    ),
-                )
                 return (
                     int(
                         cast(Any, annot[NameObject(PdfAttributes.Parent)]).get(
@@ -526,13 +520,11 @@ class Pdf:
                     & PdfAttributes.READ_ONLY
                     == PdfAttributes.READ_ONLY
                 )
-            print("radio=", annot.get(NameObject(PdfAttributes.Ff), 0))
             return (
                 int(annot.get(NameObject(PdfAttributes.Ff), 0)) & PdfAttributes.READ_ONLY
                 == PdfAttributes.READ_ONLY
             )
 
-        print("else = ", annot.get(NameObject(PdfAttributes.Ff), 0))
         return (
             int(annot.get(NameObject(PdfAttributes.Ff), 0)) & PdfAttributes.READ_ONLY
             == PdfAttributes.READ_ONLY
