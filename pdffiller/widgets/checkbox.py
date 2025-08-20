@@ -24,6 +24,7 @@ class CheckBoxWidget(Widget):
         name: str,
         page_number: int,
         value: Optional[str] = None,
+        readonly: bool = False,
         choices: Optional[List[str]] = None,
     ) -> None:
         """
@@ -33,9 +34,10 @@ class CheckBoxWidget(Widget):
             name (str): The name of the checkbox.
             page_number (int): The associated page index
             value (str): The initial value of the checkbox. Defaults to None.
+            readonly (bool): True if readonly is set, else False.
             choices: The list of available choices. Defaults to None.
         """
-        super().__init__(name, page_number, value)
+        super().__init__(name, page_number, value, readonly)
         self.choices: Optional[List[str]] = choices
 
     @property

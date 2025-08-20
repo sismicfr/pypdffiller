@@ -179,7 +179,9 @@ class Pdf:
                 elif widget_type in ["list", "combo"] and value:
                     choices = [each[1:] for each in widget[PdfAttributes.Opt]]
                 if key not in loaded_widgets:
-                    new_widget = self.TYPE_TO_OBJECT[widget_type](key, i, value)
+                    new_widget = self.TYPE_TO_OBJECT[widget_type](
+                        key, i, value, self.is_readonly(widget_type, widget.get_object())
+                    )
                     if choices and isinstance(new_widget, CheckBoxWidget):
                         new_widget.choices = choices
                     elif isinstance(new_widget, TextWidget):
@@ -292,6 +294,9 @@ class Pdf:
                 if not widget_type:
                     continue
 
+                if self.is_readonly(widget_type, annotation):
+                    output.debug(f"Read-only for {widget_key}, so skip modification")
+                    continue
                 if widget_type != "radio":
                     self.flatten_generic(annotation, flatten)
                 else:
@@ -304,7 +309,7 @@ class Pdf:
                 if current_widget.value is None:
                     continue
 
-                output.debug(f"Filling {current_widget.name} with {current_widget.value}")
+                output.debug(f"Filling {widget_key} with {current_widget.value}")
                 fillers[widget_type](annotation, current_widget)
 
         with open(output_file, "wb") as f:
@@ -489,3 +494,38 @@ class Pdf:
                     else int(annot.get(NameObject(PdfAttributes.Ff), 0)) & ~PdfAttributes.READ_ONLY
                 )
             )
+
+    @staticmethod
+    def is_readonly(widget_type: str, annot: DictionaryObject) -> bool:
+        """
+        Determines whether readonly flag is set or not.
+
+        This function evaluates if readonly is activating by checking Ff (flags) entry
+        in the annotation dictionary.
+
+        Args:
+            widget_type (str): The widget type
+            annot (DictionaryObject): The annotation dictionary.
+        Returns:
+            True if read-only is set, else False
+        """
+        if widget_type == "radio":
+            if PdfAttributes.Parent in annot:
+                return (
+                    int(
+                        cast(Any, annot[NameObject(PdfAttributes.Parent)]).get(
+                            NameObject(PdfAttributes.Ff), 0
+                        )
+                    )
+                    & PdfAttributes.READ_ONLY
+                    == PdfAttributes.READ_ONLY
+                )
+            return (
+                int(annot.get(NameObject(PdfAttributes.Ff), 0)) & PdfAttributes.READ_ONLY
+                == PdfAttributes.READ_ONLY
+            )
+
+        return (
+            int(annot.get(NameObject(PdfAttributes.Ff), 0)) & PdfAttributes.READ_ONLY
+            == PdfAttributes.READ_ONLY
+        )
