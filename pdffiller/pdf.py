@@ -397,9 +397,12 @@ class Pdf:
         ):
             # determine the export value of each kid
             keys = each[PdfAttributes.AP][PdfAttributes.N].keys()
-            if PdfAttributes.Off in keys:
-                keys.remove(PdfAttributes.Off)
             export = list(keys)[0] or None
+            if keys:
+                for key in keys:
+                    if key != PdfAttributes.Off:
+                        export = key
+                        break
 
             if f"/{widget.value}" == export:
                 annotation[NameObject(PdfAttributes.AS)] = NameObject(export)
