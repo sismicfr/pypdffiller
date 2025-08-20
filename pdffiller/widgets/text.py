@@ -25,6 +25,7 @@ class TextWidget(Widget):
         name: str,
         page_number: int,
         value: Optional[str] = None,
+        readonly: bool = False,
         max_length: Optional[int] = None,
     ) -> None:
         """
@@ -34,9 +35,10 @@ class TextWidget(Widget):
             name (str): The name of the checkbox.
             page_number (int): The associated page index
             value (str): The initial value of the checkbox. Defaults to None.
+            readonly (bool): True if readonly is set, else False.
             max_length (int): The maximum length of the text field. Defaults to None.
         """
-        super().__init__(name, page_number, value)
+        super().__init__(name, page_number, value, readonly)
         self.max_length: Optional[int] = max_length
 
     @property
