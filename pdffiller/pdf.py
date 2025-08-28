@@ -242,7 +242,7 @@ class Pdf:
         """
         reader = PdfReader(input_file)
 
-        self.build_widgets(input_file)
+        self._init_helper(input_file)
         fields: Dict[str, Union[str, List[str], Tuple[str, str, float]]] = {}
 
         for name, value in data.items():
