@@ -249,7 +249,7 @@ class Pdf:
             widget = self.widgets.get(name)
             fields[name] = value
             if isinstance(widget, CheckBoxWidget):
-                if value[0] != "/":
+                if value and value[0] != "/":
                     data[name] = "/" + data[name]
 
         writer = PdfWriter(reader)
