@@ -247,10 +247,11 @@ class Pdf:
 
         for name, value in data.items():
             widget = self.widgets.get(name)
-            fields[name] = value
-            if isinstance(widget, CheckBoxWidget):
-                if value and value[0] != "/":
-                    fields[name] = "/" + value
+            if value:
+                fields[name] = value
+                if isinstance(widget, CheckBoxWidget):
+                    if value and value[0] != "/":
+                        fields[name] = "/" + value
 
         writer = PdfWriter(reader)
         writer.update_page_form_field_values(None, fields, auto_regenerate=False, flatten=flatten)
