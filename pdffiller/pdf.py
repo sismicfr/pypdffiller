@@ -250,10 +250,10 @@ class Pdf:
             fields[name] = value
             if isinstance(widget, CheckBoxWidget):
                 if value and value[0] != "/":
-                    data[name] = "/" + data[name]
+                    fields[name] = "/" + value
 
         writer = PdfWriter(reader)
-        writer.update_page_form_field_values(None, fields, flatten=flatten)
+        writer.update_page_form_field_values(None, fields, auto_regenerate=False, flatten=flatten)
         if flatten:
             writer.remove_annotations(None)
 
