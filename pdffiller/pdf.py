@@ -14,25 +14,19 @@ from collections import OrderedDict
 
 from pypdf import PdfReader, PdfWriter
 from pypdf.errors import PyPdfError
-from pypdf.generic import (
-    ArrayObject,
-    DictionaryObject,
-    NameObject,
-    NumberObject,
-    TextStringObject,
-)
+from pypdf.generic import ArrayObject, DictionaryObject, NameObject
 
 from pdffiller.io.output import PdfFillerOutput
 
 from .typing import (
     Any,
-    Callable,
     cast,
     Dict,
     List,
     Optional,
     PathLike,
     StrByteType,
+    Tuple,
     Type,
     Union,
 )
@@ -226,7 +220,7 @@ class Pdf:
         self,
         input_file: StrByteType,
         output_file: PathLike,
-        data: Dict[str, Union[str, int, float, bool]],
+        data: Dict[str, str],
         flatten: bool = True,
     ) -> "Pdf":
         """
@@ -246,71 +240,23 @@ class Pdf:
         Returns:
             Pdf: The `Pdf` object, allowing for method chaining.
         """
-        for key, value in data.items():
-            if key in self.widgets:
-                self.widgets[key].value = value
-
         reader = PdfReader(input_file)
-        if self.adobe_mode:
-            if (
-                PdfAttributes.AcroForm in cast(Any, reader.trailer[PdfAttributes.Root])
-                and PdfAttributes.XFA
-                in cast(Any, reader.trailer[PdfAttributes.Root])[PdfAttributes.AcroForm]
-            ):
-                del cast(Any, reader.trailer[PdfAttributes.Root])[PdfAttributes.AcroForm][
-                    PdfAttributes.XFA
-                ]
+
+        self._init_helper(input_file)
+        fields: Dict[str, Union[str, List[str], Tuple[str, str, float]]] = {}
+
+        for name, value in data.items():
+            widget = self.widgets.get(name)
+            fields[name] = value
+            if isinstance(widget, CheckBoxWidget):
+                if value and value[0] != "/":
+                    fields[name] = "/" + value
 
         writer = PdfWriter(reader)
-        if self.adobe_mode:
-            writer.set_need_appearances_writer()
-
-        fillers: Dict[str, Callable[[DictionaryObject, Any], None]] = {
-            "checkbox": self._fill_checkbox,
-            "text": self._fill_text,
-            "radio": self._fill_radio,
-        }
-
-        output = PdfFillerOutput()
-        for page in writer.pages:
-            widgets: Optional[ArrayObject] = page.annotations
-            if not widgets:
-                continue
-            for widget in widgets:
-                if (
-                    PdfAttributes.Subtype not in widget
-                    or widget[PdfAttributes.Subtype] != PdfAttributes.Widget
-                ):
-                    continue
-
-                annotation = cast(DictionaryObject, widget.get_object())
-                if PdfAttributes.T not in widget:
-                    widget = widget[PdfAttributes.Parent]
-                widget_key: Optional[str] = self._get_widget_name(widget)
-                if not widget_key or widget_key not in self.widgets:
-                    continue
-
-                widget_type: Optional[str] = self._get_field_type(widget)
-                if not widget_type:
-                    continue
-
-                if self.is_readonly(widget_type, annotation):
-                    output.debug(f"Read-only for {widget_key}, so skip modification")
-                    continue
-                if widget_type != "radio":
-                    self.flatten_generic(annotation, flatten)
-                else:
-                    self.flatten_radio(annotation, flatten)
-
-                if widget_key not in data or widget_type not in fillers:
-                    continue
-
-                current_widget = self.widgets[widget_key]
-                if current_widget.value is None:
-                    continue
-
-                output.debug(f"Filling {widget_key} with {current_widget.value}")
-                fillers[widget_type](annotation, current_widget)
+        writer.update_page_form_field_values(None, fields, auto_regenerate=False, flatten=flatten)
+        if flatten:
+            writer.remove_annotations(None)
+        writer.compress_identical_objects(remove_identicals=True, remove_orphans=True)
 
         with open(output_file, "wb") as f:
             writer.write(f)
@@ -349,151 +295,6 @@ class Pdf:
             return "checkbox"
 
         return None
-
-    @staticmethod
-    def _fill_text(annotation: DictionaryObject, widget: TextWidget) -> None:
-        """
-        Updates the value of a text annotation, setting the text content.
-
-        This function modifies the value (V) and appearance (AP) of the text
-        annotation to reflect the new text content.
-
-        Args:
-            annotation (DictionaryObject): The text annotation dictionary.
-            widget (TextWidget): The Text widget object containing the text value.
-        """
-        if PdfAttributes.Parent in annotation and PdfAttributes.T not in annotation:
-            annotation[NameObject(PdfAttributes.Parent)] = TextStringObject(widget.value)
-            annotation[NameObject(PdfAttributes.AP)] = TextStringObject(widget.value)
-        else:
-            annotation[NameObject(PdfAttributes.V)] = TextStringObject(widget.value)
-            annotation[NameObject(PdfAttributes.AP)] = TextStringObject(widget.value)
-
-    @staticmethod
-    def _fill_checkbox(annotation: DictionaryObject, widget: CheckBoxWidget) -> None:
-        value: Union[bool, str, None] = widget.value
-        if value is None:
-            value = False
-        if not isinstance(value, bool):
-            annotation[NameObject(PdfAttributes.AS)] = NameObject("/" + widget.value)
-            annotation[NameObject(PdfAttributes.V)] = NameObject("/" + widget.value)
-            return
-
-        for each in cast(Any, annotation[PdfAttributes.AP])[PdfAttributes.N]:
-            if (value and str(each) != PdfAttributes.Off) or (
-                not value and str(each) == PdfAttributes.Off
-            ):
-                annotation[NameObject(PdfAttributes.AS)] = NameObject(each)
-                annotation[NameObject(PdfAttributes.V)] = NameObject(each)
-                return
-
-        if PdfAttributes.V in annotation:
-            del annotation[PdfAttributes.V]
-        if PdfAttributes.AS in annotation:
-            del annotation[PdfAttributes.AS]
-
-    @staticmethod
-    def _fill_radio(annotation: DictionaryObject, widget: RadioWidget) -> None:
-
-        for each in (
-            cast(Any, annotation[PdfAttributes.Kids])
-            if PdfAttributes.T in annotation
-            else cast(Any, annotation[PdfAttributes.Parent])[PdfAttributes.Kids]
-        ):
-            # determine the export value of each kid
-            keys = each[PdfAttributes.AP][PdfAttributes.N].keys()
-            export = list(keys)[0] or None
-            if keys:
-                for key in keys:
-                    if key != PdfAttributes.Off:
-                        export = key
-                        break
-
-            if f"/{widget.value}" == export:
-                annotation[NameObject(PdfAttributes.AS)] = NameObject(export)
-                cast(Any, annotation[NameObject(PdfAttributes.Parent)])[
-                    NameObject(PdfAttributes.V)
-                ] = NameObject(export)
-            else:
-                annotation[NameObject(PdfAttributes.AS)] = NameObject(PdfAttributes.Off)
-
-    @staticmethod
-    def flatten_radio(annot: DictionaryObject, val: bool) -> None:
-        """
-        Flattens a radio button annotation by setting or unsetting the ReadOnly flag,
-        making it non-editable or editable based on the `val` parameter.
-
-        This function modifies the Ff (flags) entry in the radio button's annotation
-        dictionary or its parent dictionary if `Parent` exists in `annot`, to set or
-        unset the ReadOnly flag, preventing or allowing the user from changing the
-        selected option.
-
-        Args:
-            annot (DictionaryObject): The radio button annotation dictionary.
-            val (bool): True to flatten (make read-only), False to unflatten (make editable).
-        """
-        if PdfAttributes.Parent in annot:
-            cast(Any, annot[NameObject(PdfAttributes.Parent)])[NameObject(PdfAttributes.Ff)] = (
-                NumberObject(
-                    (
-                        int(
-                            cast(Any, annot[NameObject(PdfAttributes.Parent)]).get(
-                                NameObject(PdfAttributes.Ff), 0
-                            )
-                        )
-                        | PdfAttributes.READ_ONLY
-                        if val
-                        else int(
-                            cast(Any, annot[NameObject(PdfAttributes.Parent)]).get(
-                                NameObject(PdfAttributes.Ff), 0
-                            )
-                        )
-                        & ~PdfAttributes.READ_ONLY
-                    )
-                )
-            )
-        else:
-            annot[NameObject(PdfAttributes.Ff)] = NumberObject(
-                (
-                    int(annot.get(NameObject(PdfAttributes.Ff), 0)) | PdfAttributes.READ_ONLY
-                    if val
-                    else int(annot.get(NameObject(PdfAttributes.Ff), 0)) & ~PdfAttributes.READ_ONLY
-                )
-            )
-
-    @staticmethod
-    def flatten_generic(annot: DictionaryObject, val: bool) -> None:
-        """
-        Flattens a generic annotation by setting or unsetting the ReadOnly flag,
-        making it non-editable or editable based on the `val` parameter.
-
-        This function modifies the Ff (flags) entry in the annotation dictionary to
-        set or unset the ReadOnly flag, preventing or allowing the user from
-        interacting with the form field.
-
-        Args:
-            annot (DictionaryObject): The annotation dictionary.
-            val (bool): True to flatten (make read-only), False to unflatten (make editable).
-        """
-        if PdfAttributes.Parent in annot and PdfAttributes.Ff not in annot:
-            cast(Any, annot[NameObject(PdfAttributes.Parent)])[NameObject(PdfAttributes.Ff)] = (
-                NumberObject(
-                    (
-                        int(annot.get(NameObject(PdfAttributes.Ff), 0)) | PdfAttributes.READ_ONLY
-                        if val
-                        else int(annot.get(NameObject(PdfAttributes.Ff), 0))
-                        & ~PdfAttributes.READ_ONLY
-                    )
-                )
-            )
-        else:
-            annot[NameObject(PdfAttributes.Ff)] = NumberObject(
-                (
-                    int(annot.get(NameObject(PdfAttributes.Ff), 0)) | PdfAttributes.READ_ONLY
-                    if val
-                    else int(annot.get(NameObject(PdfAttributes.Ff), 0)) & ~PdfAttributes.READ_ONLY
-                )
-            )
 
     @staticmethod
     def is_readonly(widget_type: str, annot: DictionaryObject) -> bool:

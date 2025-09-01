@@ -17,7 +17,7 @@ from pdffiller.exceptions import (
 )
 from pdffiller.io.output import PdfFillerOutput
 from pdffiller.pdf import Pdf
-from pdffiller.typing import Any, Dict, Union
+from pdffiller.typing import Any, Dict
 
 from ..exit_codes import ERROR_ENCOUNTERED
 
@@ -94,7 +94,7 @@ def fill_form(parser: PdfFillerArgumentParser, *args: Any) -> Any:
     if not opts.data and not opts.input_data:
         raise CommandLineError("no data file path given")
 
-    input_data: Dict[str, Union[str, int, float, bool]] = {}
+    input_data: Dict[str, str] = {}
     if opts.input_data:
         try:
             input_data = json.loads(opts.input_data)
@@ -132,7 +132,7 @@ def fill_form(parser: PdfFillerArgumentParser, *args: Any) -> Any:
         input_data = input_dict
 
     try:
-        pdf = Pdf(opts.file)
+        pdf = Pdf()
         pdf.fill(opts.file, opts.output, input_data, opts.flatten)
     except PdfFillerException as exp:
         output.error(str(exp))
