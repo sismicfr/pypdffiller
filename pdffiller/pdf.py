@@ -261,7 +261,7 @@ class Pdf:
 
         output.info("fill pdf with input values")
         writer = CustomPdfWriter(reader)
-        writer.update_page_form_field_values(None, fields, auto_regenerate=False, flatten=flatten)
+        writer.update_field_values(None, fields, auto_regenerate=False, flatten=flatten)
         if flatten:
             output.info("remove all annotations")
             writer.remove_annotations(None)

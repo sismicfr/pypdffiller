@@ -72,7 +72,7 @@ class CustomPdfWriter(PdfWriter):  # pylint: disable=abstract-method
         if isinstance(page, list):
             for p in page:
                 if PG.ANNOTS in p:  # just to prevent warnings
-                    self.update_page_form_field_values(p, fields, flags, None, flatten=flatten)
+                    self.update_field_values(p, fields, flags, None, flatten=flatten)
             return
         output = PdfFillerOutput()
         if PG.ANNOTS not in page:
