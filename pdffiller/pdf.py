@@ -12,10 +12,11 @@ methods for interacting with its form fields and content.
 
 from collections import OrderedDict
 
-from pypdf import PdfReader, PdfWriter
+from pypdf import PdfReader
 from pypdf.errors import PyPdfError
 from pypdf.generic import ArrayObject, DictionaryObject, NameObject
 
+from pdffiller.io.custom_pdf_writer import CustomPdfWriter
 from pdffiller.io.output import PdfFillerOutput
 
 from .typing import (
@@ -118,6 +119,8 @@ class Pdf:
         if not content:
             return
 
+        output = PdfFillerOutput()
+        output.verbose("loading file in memory")
         loaded_widgets: OrderedDict[str, Widget] = OrderedDict()
         try:
             pdf_file = PdfReader(content)
@@ -126,6 +129,7 @@ class Pdf:
             return
 
         for i, page in enumerate(pdf_file.pages):
+            output.verbose(f"loading page {i+1}/{len(pdf_file.pages)}")
             widgets: Optional[ArrayObject] = page.annotations
             if not widgets:
                 continue
@@ -241,23 +245,30 @@ class Pdf:
             Pdf: The `Pdf` object, allowing for method chaining.
         """
         reader = PdfReader(input_file)
+        output = PdfFillerOutput()
 
         self._init_helper(input_file)
         fields: Dict[str, Union[str, List[str], Tuple[str, str, float]]] = {}
 
+        output.verbose("checking value for radio/checkbox ...")
         for name, value in data.items():
             widget = self.widgets.get(name)
             fields[name] = value
             if isinstance(widget, CheckBoxWidget):
                 if value and value[0] != "/":
-                    fields[name] = "/" + value
+                    output.info(f"override {name} value with /{value}")
+                    fields[name] = f"/{value}"
 
-        writer = PdfWriter(reader)
+        output.info("fill pdf with input values")
+        writer = CustomPdfWriter(reader)
         writer.update_page_form_field_values(None, fields, auto_regenerate=False, flatten=flatten)
         if flatten:
+            output.info("remove all annotations")
             writer.remove_annotations(None)
+        output.info("compress file")
         writer.compress_identical_objects(remove_identicals=True, remove_orphans=True)
 
+        output.info(f"write {output_file} on the disk")
         with open(output_file, "wb") as f:
             writer.write(f)
 

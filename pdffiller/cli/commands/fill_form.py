@@ -131,6 +131,9 @@ def fill_form(parser: PdfFillerArgumentParser, *args: Any) -> Any:
                 input_dict[html.unescape(field["name"])] = html.unescape(field["value"])
         input_data = input_dict
 
+    output.info(f"input file: {opts.file}")
+    output.info("input values are:")
+    output.info(json.dumps(input_data, indent=4))
     try:
         pdf = Pdf()
         pdf.fill(opts.file, opts.output, input_data, opts.flatten)
