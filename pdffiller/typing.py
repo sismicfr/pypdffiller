@@ -13,6 +13,7 @@ from typing import (
     Optional,
     overload,
     Sequence,
+    TextIO,
     Tuple,
     Type,
     TYPE_CHECKING,
@@ -43,6 +44,7 @@ __all__ = [
     "Union",
     "SubParserType",
     "StrByteType",
+    "TextIO",
 ]
 
 

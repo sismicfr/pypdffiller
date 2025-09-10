@@ -7,7 +7,7 @@ from colorama import Fore, Style
 from pdffiller import const
 from pdffiller.exceptions import CommandLineError
 from pdffiller.io.colors import color_enabled, is_terminal
-from pdffiller.typing import Dict, Optional, Union
+from pdffiller.typing import Dict, Optional, TextIO, Union
 
 LEVEL_QUIET = 80  # -q
 LEVEL_ERROR = 70  # Errors
@@ -56,14 +56,11 @@ class PdfFillerOutput:
     # Singleton
     _output_level: int = LEVEL_STATUS
     _output_file: Optional[str] = None
+    _output_stream: Optional[TextIO] = None
 
     def __init__(self, scope: str = "") -> None:
-        self.stream = sys.stderr
+        self.stream = self._output_stream or sys.stderr
         self._scope = scope
-        if self._output_file:
-            self.stream = open(  # pylint: disable=consider-using-with
-                self._output_file, "wt", encoding="utf-8"
-            )
         self._color: bool = color_enabled(self.stream)
 
     @classmethod
@@ -104,6 +101,10 @@ class PdfFillerOutput:
         :param file_path: Optional path to output log file.
         """
         cls._output_file = file_path
+        if cls._output_file:
+            cls._output_stream = open(  # pylint: disable=consider-using-with
+                cls._output_file, "wt", encoding="utf-8"
+            )
 
     @classmethod
     def level_allowed(cls, level: int) -> bool:
