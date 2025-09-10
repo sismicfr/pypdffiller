@@ -1,9 +1,9 @@
-pypdffiller
-===========
+pdffiller
+=========
 
 |Test| |PyPI| |Python| |Code Style| |Pre-Commit| |License|
 
-``pypdffiller`` is a free and open source pure-Python 3 library for PDF form processing. It contains the essential
+``python-pdffiller`` is a free and open source pure-Python 3 library for PDF form processing. It contains the essential
 functionalities needed to interact with PDF forms:
 
 - Inspect what data a PDF form needs to be filled with.
@@ -12,9 +12,9 @@ functionalities needed to interact with PDF forms:
 Installation
 ------------
 
-As of first version, ``pypdffiller`` is compatible with Python 3.9+.
+As of first version, ``python-pdffiller`` is compatible with Python 3.9+.
 
-Use ``pip`` to install the latest stable version of ``pypdffiller``:
+Use ``pip`` to install the latest stable version of ``python-pdffiller``:
 
 .. code-block:: console
 
@@ -39,7 +39,7 @@ https://github.com/sismicfr/pypdffiller/issues.
 Documentation
 -------------
 
-The full documentation for CLI and API is available at https://pypdffiller.readthedocs.org/en/stable/.
+The full documentation for CLI and API is available at https://sismicfr.github.io/pypdffiller/
 
 Build the docs
 ~~~~~~~~~~~~~~
@@ -73,23 +73,19 @@ We use ``tox`` to manage our environment and build the executable:
 Contributing
 ------------
 
-For guidelines for contributing to ``pypdffiller``, refer to `CONTRIBUTING.rst <https://github.com/sismicfr/pypdffiller/blob/main/CONTRIBUTING.rst>`_.
+For guidelines for contributing to ``python-pdffiller``, refer to `CONTRIBUTING.rst <https://github.com/sismicfr/pypdffiller/blob/main/CONTRIBUTING.rst>`_.
 
 
 .. |Test| image:: https://github.com/sismicfr/pypdffiller/workflows/Test/badge.svg
    :target: https://github.com/sismicfr/pypdffiller/actions
    :alt: Test
 
-.. |PyPI| image:: https://img.shields.io/pypi/v/pypdffiller?label=PyPI&logo=pypi
-   :target: https://badge.fury.io/py/pypdffiller
+.. |PyPI| image:: https://img.shields.io/pypi/v/python-pdffiller?label=PyPI&logo=pypi
+   :target: https://badge.fury.io/py/python-pdffiller
    :alt: PyPI
 
-.. |Read the Docs| image:: https://img.shields.io/readthedocs/pypdffiller?label=Documentation&logo=Read%20the%20Docs
-   :target: https://sismicfr.github.io/pypdffiller
-   :alt: Docs
-
-.. |Python| image:: https://img.shields.io/pypi/pyversions/pypdffiller.svg?label=Python&logo=Python
-   :target: https://pypi.python.org/pypi/pypdffiller
+.. |Python| image:: https://img.shields.io/pypi/pyversions/python-pdffiller.svg?label=Python&logo=Python
+   :target: https://pypi.python.org/pypi/python-pdffiller
    :alt: Python
 
 .. |Code Style| image:: https://img.shields.io/badge/code%20style-black-000000.svg?label=Code%20Style

@@ -3,6 +3,8 @@
 *.bak
 installer/_build
 installer/dist
+/*.pdf
+/*.json
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
