@@ -272,14 +272,14 @@ class Pdf:
         with open(output_file, "wb") as f:
             writer.write(f)
 
-        output.info('try to remove identical objects')
+        output.info("try to remove identical objects")
         try:
             writer.compress_identical_objects(remove_identicals=True, remove_orphans=False)
             output.info(f"write {output_file} on the disk")
             with open(output_file, "wb") as f:
                 writer.write(f)
-        except:
-            output.warning('An error occurs when removing identical objects')
+        except Exception:  # pylint: disable=broad-exception-caught
+            output.warning("An error occurs when removing identical objects")
         return self
 
     def _get_widget_name(self, widget: Any) -> Optional[str]:
