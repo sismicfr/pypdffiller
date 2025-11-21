@@ -266,12 +266,20 @@ class Pdf:
             output.info("remove all annotations")
             writer.remove_annotations(None)
         output.info("compress file")
-        writer.compress_identical_objects(remove_identicals=True, remove_orphans=True)
+        writer.compress_identical_objects(remove_identicals=False, remove_orphans=True)
 
         output.info(f"write {output_file} on the disk")
         with open(output_file, "wb") as f:
             writer.write(f)
 
+        output.info("try to remove identical objects")
+        try:
+            writer.compress_identical_objects(remove_identicals=True, remove_orphans=False)
+            output.info(f"write {output_file} on the disk")
+            with open(output_file, "wb") as f:
+                writer.write(f)
+        except Exception:  # pylint: disable=broad-exception-caught
+            output.warning("An error occurs when removing identical objects")
         return self
 
     def _get_widget_name(self, widget: Any) -> Optional[str]:

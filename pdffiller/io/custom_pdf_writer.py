@@ -132,11 +132,11 @@ class CustomPdfWriter(PdfWriter):  # pylint: disable=abstract-method
                 elif parent_annotation.get(FA.FT) == "/Tx" or parent_annotation.get(FA.FT) == "/Ch":
                     # textbox
                     if isinstance(value, tuple):
-                        self._update_field_annotation(
+                        self._update_field_annotation(  # type: ignore[attr-defined] # pylint: disable=no-member
                             page, parent_annotation, annotation, value[1], value[2], flatten=flatten
                         )
                     else:
-                        self._update_field_annotation(
+                        self._update_field_annotation(  # type: ignore[attr-defined]  # pylint: disable=no-member
                             page, parent_annotation, annotation, flatten=flatten
                         )
                 elif annotation.get(FA.FT) == "/Sig":  # deprecated  # not implemented yet
