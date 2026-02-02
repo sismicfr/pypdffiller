@@ -92,6 +92,7 @@ logging_use_named_masks = false
 major_on_zero = true
 tag_format = "v{version}"
 build_command = """
+    apt update && apt install -y --no-install-recommends pkg-config gcc g++ swig && \
     python -m pip install build -rrequirements.txt && \
     python -m build . && \
     python installer/build.py
