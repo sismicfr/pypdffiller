@@ -10,6 +10,7 @@ from pdffiller.cli.exit_codes import (
     SUCCESS,
 )
 
+
 def test_incomplete_no_action():
     """test empty command-line"""
 
@@ -17,10 +18,7 @@ def test_incomplete_no_action():
         assert cli.main() == ERROR_COMMAND_NAME
 
 
-@pytest.mark.parametrize(
-    "argv",
-    []
-)
+@pytest.mark.parametrize("argv", [])
 def test_incomplete(argv):
     """test empty command-line"""
 
@@ -106,4 +104,3 @@ def test_complete_with_invalid_file(test_data_dir):
 
     # Test with direct call to main function
     assert cli.main(["dump_data_fields"] + argv) == ERROR_UNEXPECTED
-

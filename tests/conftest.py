@@ -60,6 +60,7 @@ def fixture_dynamic_config_file(tmp_path) -> Generator[Path, None, None]:
     yield config_path
     config_path.unlink()
 
+
 @pytest.fixture(name="output_pdf_path")
 def fixture_output_pdf_path(tmp_path) -> Generator[Path, None, None]:
     """Generate temporary output pdf file"""

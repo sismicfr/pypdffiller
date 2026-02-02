@@ -3,6 +3,7 @@ import pytest
 from pdffiller.pdf import Pdf
 from pdffiller.exceptions import PdfFillerException
 
+
 def test_valid_pdf(test_data_dir):
     reader = Pdf(str(test_data_dir / "input.pdf"))
     assert len(reader.widgets) == 5
