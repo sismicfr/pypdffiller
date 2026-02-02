@@ -43,7 +43,7 @@ __all__ = [
     "Type",
     "Union",
     "SubParserType",
-    "StrByteType",
+    "StreamType",
     "TextIO",
 ]
 
@@ -52,7 +52,6 @@ ExitCode = Union[str, int, None]
 PathLike = Union[str, Path]
 
 StreamType = IO[Any]
-StrByteType = Union[PathLike, StreamType]
 
 if TYPE_CHECKING:
     # pylint: disable=protected-access,line-too-long

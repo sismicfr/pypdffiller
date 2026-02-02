@@ -28,7 +28,7 @@ repos:
       - id: pylint
         additional_dependencies:
           - pytest==7.2.2
-          - pypdf
+          - pymupdf==1.24.10
           - colorama
           - pyyaml
         files: '^(pdffiller)/'
@@ -38,7 +38,7 @@ repos:
       - id: mypy
         additional_dependencies:
           - types-setuptools==65.7.0.4
-          - pypdf
+          - pymupdf==1.24.10
           - colorama
           - pyyaml
         files: '^(pdffiller)/'

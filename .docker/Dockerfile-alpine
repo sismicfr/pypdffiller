@@ -1,6 +1,7 @@
 FROM python:alpine3.21
 
 RUN apk add -U make binutils shadow
+RUN apk add gcc musl-dev linux-headers make g++ clang-dev swig
 
 # Customize user id and group id
 ARG USER_ID=1000
