@@ -111,7 +111,7 @@ def build_installer(source_folder: str, work_folder: str) -> str:
 
     if platform.system() == "Windows":
         win_ver_file = os.path.join(build_folder, "windows-version-file")
-        ico_file_path = os.path.join(source_folder, "installer", "sql.ico")
+        ico_file_path = os.path.join(source_folder, "installer", "pdffiller.ico")
         content = _windows_rc_file(__version__)
         with open(win_ver_file, "wt", encoding="utf-8") as fpyins:
             fpyins.write(content)

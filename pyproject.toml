@@ -26,7 +26,7 @@ classifiers = [
 readme = "README.rst"
 authors = [{ name = "Jacques Raphanel", email = "jraphanel@sismic.fr" }]
 keywords = ["development", "pdf"]
-dependencies = ["pypdf", "colorama", "pyyaml"]
+dependencies = ["pymupdf==1.24.10", "colorama", "pyyaml"]
 
 [project.scripts]
 pdffiller = "pdffiller.cli:main"

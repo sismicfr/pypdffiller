@@ -2,7 +2,7 @@ FROM python:slim-bullseye
 
 RUN DEBIAN_FRONTEND=noninteractive \
     && apt-get update \
-    && apt-get install -y make binutils
+    && apt-get install -y make binutils pkg-config gcc g++ swig
 
 # Customize user id and group id
 ARG USER_ID=1000

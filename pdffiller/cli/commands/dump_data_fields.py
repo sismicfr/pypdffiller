@@ -30,7 +30,8 @@ def dump_fields_text_formatter(pdf: Pdf) -> None:
 
 def dump_fields_json_formatter(pdf: Pdf) -> None:
     """Print output text for dump_fields command as simple text"""
-
+    if not pdf:
+        return
     cli_out_write(json.dumps(pdf.schema, indent=4, ensure_ascii=False))
 
 

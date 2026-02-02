@@ -99,14 +99,14 @@ cover: tox
 doc: e=doc ## Generate documentation
 doc: tox
 
-exe: e=installer ## Build the executable
+exe: e=installer$(OSNAME) ## Build the executable
 exe: tox
 
 .docker-build:
 	$(NOISE)$(ECHOCMD)docker build -f .docker/Dockerfile-$(OSNAME) -t build-$(OSNAME) $(DOCKER_BUILD_ARGS) .
 
 .docker-build-exe:
-	$(NOISE)$(ECHOCMD)docker run --rm -v .:/app build-$(OSNAME) make exe OSNAME=$(OSNAME)
+	$(NOISE)$(ECHOCMD)docker run --rm -v .:/app build-$(OSNAME) make exe OSNAME=$(OSNAME) DOCKER_BUILD=1
 
 debian-exe: OSNAME=debian	## Build executable on Debian
 debian-exe: .docker-build
