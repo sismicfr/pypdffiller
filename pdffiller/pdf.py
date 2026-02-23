@@ -167,6 +167,13 @@ class Pdf:
         output = PdfFillerOutput()
 
         output.info("filling pdf with input values")
+        for page in document:
+            for field in page.widgets():
+                if (
+                    field.field_type
+                    == pymupdf.PDF_WIDGET_TYPE_RADIOBUTTON  # pylint: disable=no-member
+                ):
+                    field.field_value = None
         # Iterate over all pages and process fields
         for page in document:
             for field in page.widgets():
@@ -178,8 +185,7 @@ class Pdf:
                         field.field_type
                         == pymupdf.PDF_WIDGET_TYPE_CHECKBOX  # pylint: disable=no-member
                     ):
-                        print(f"{field.field_name} => {field.on_state()} vs {value}")
-                        if value.strip() and "Off" != value.strip():
+                        if value.strip() and "off" != value.strip().lower():
                             output.verbose(
                                 f"updating checkbox with {value} from {field.field_value}"
                             )
@@ -192,11 +198,13 @@ class Pdf:
                         field.field_type
                         == pymupdf.PDF_WIDGET_TYPE_RADIOBUTTON  # pylint: disable=no-member
                     ):
-                        if value == field.on_state():
+                        if value.lower() == field.on_state().lower():
                             output.verbose(
                                 f"updating radiobutton with {value} from {field.field_value}"
                             )
                             field.field_value = value
+                        else:
+                            continue
 
                     # Handling other fields types
                     else:
@@ -207,7 +215,6 @@ class Pdf:
 
                     # Update the widget!
                     field.update()
-
         try:
             if flatten:
                 output.info("remove all annotations")
