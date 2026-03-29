@@ -101,7 +101,9 @@ class Pdf:
                         widget.field_name, i, widget.field_value, widget.field_flags & (1 << 0)
                     )
                     if choices and isinstance(new_widget, CheckBoxWidget):
-                        new_widget.choices = choices
+                        if "Off" not in choices:
+                            choices.insert(0, "Off")
+                        new_widget.choices = [choice.replace('#20', ' ') for choice in choices]
                     elif isinstance(new_widget, TextWidget):
                         new_widget.max_length = widget.text_maxlen
                     loaded_widgets[widget.field_name] = new_widget
@@ -109,6 +111,7 @@ class Pdf:
                     new_widget = loaded_widgets[widget.field_name]
                     if choices and isinstance(new_widget, CheckBoxWidget):
                         for each in choices:
+                            each = each.replace('#20', ' ')
                             if new_widget.choices is not None:
                                 if each not in new_widget.choices:
                                     new_widget.choices.append(each)
@@ -185,6 +188,7 @@ class Pdf:
                         field.field_type
                         == pymupdf.PDF_WIDGET_TYPE_CHECKBOX  # pylint: disable=no-member
                     ):
+                        value = value.replace(' ', '#20')
                         if value.strip() and "off" != value.strip().lower():
                             output.verbose(
                                 f"updating checkbox with {value} from {field.field_value}"
@@ -198,6 +202,7 @@ class Pdf:
                         field.field_type
                         == pymupdf.PDF_WIDGET_TYPE_RADIOBUTTON  # pylint: disable=no-member
                     ):
+                        value = value.replace(' ', '#20')
                         if value.lower() == field.on_state().lower():
                             output.verbose(
                                 f"updating radiobutton with {value} from {field.field_value}"
