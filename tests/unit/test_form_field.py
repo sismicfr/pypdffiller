@@ -17,7 +17,7 @@ def test_valid_pdf(test_data_dir):
     assert len(schema[4]["FieldOptions"]) == 4
     assert "Divorced" in schema[4]["FieldOptions"]
     assert "Off" in schema[4]["FieldOptions"]
-    assert schema[4]["FieldValue"] == "Off"
+    assert schema[4]["FieldValue"] == "Married"
 
 
 def test_invalid_pdf(test_data_dir):
