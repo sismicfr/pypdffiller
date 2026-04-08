@@ -71,7 +71,7 @@ def test_complete(test_data_dir, capsys):
             "Divorced"
         ],
         "FieldName": "MaritalStatus",
-        "FieldValue": "Off"
+        "FieldValue": "Married"
     }
 ]"""
     # Test through direct command-line

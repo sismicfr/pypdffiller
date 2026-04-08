@@ -167,7 +167,7 @@ jobs:
             name: python-build
             path: dist
         - name: Publish package to GitHub Releases
-          uses: python-semantic-release/publish-action@v1
+          uses: python-semantic-release/publish-action@v10
           with:
             github_token: ${{ secrets.RELEASE_GITHUB_TOKEN  }}
             tag: ${{ needs.release.outputs.tag }}
