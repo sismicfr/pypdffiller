@@ -121,6 +121,10 @@ class Pdf:
                         cast(CheckBoxWidget, loaded_widgets[widget.field_name]).choices = (
                             new_widget.choices
                         )
+                        if "Off" != widget.field_value:
+                            cast(CheckBoxWidget, loaded_widgets[widget.field_name]).value = (
+                                widget.field_value
+                            )
 
         self.widgets = loaded_widgets
 
