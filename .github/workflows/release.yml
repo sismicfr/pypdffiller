@@ -166,8 +166,11 @@ jobs:
           with:
             name: python-build
             path: dist
-        - name: Publish package to GitHub Releases
-          uses: python-semantic-release/publish-action@v10
-          with:
-            github_token: ${{ secrets.RELEASE_GITHUB_TOKEN  }}
-            tag: ${{ needs.release.outputs.tag }}
+        - name: Upload assets to GitHub Release
+          env:
+            GH_TOKEN: ${{ secrets.RELEASE_GITHUB_TOKEN }}
+          run: |
+            gh release upload "${{ needs.release.outputs.tag }}" \
+              installer/dist/*.tar.gz \
+              dist/* \
+              --clobber
