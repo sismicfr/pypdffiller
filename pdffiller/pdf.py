@@ -88,7 +88,7 @@ class Pdf:
             ) from ex
 
         for i, page in enumerate(doc.pages()):
-            output.verbose(f"loading page {i+1}/{doc.page_count}")
+            output.verbose(f"loading page {i + 1}/{doc.page_count}")
             for widget in page.widgets():
                 button_states = widget.button_states()
                 choices = button_states["normal"] if button_states else None
@@ -105,7 +105,7 @@ class Pdf:
                             choices.insert(0, "Off")
                         new_widget.choices = [choice.replace("#20", " ") for choice in choices]
                     elif isinstance(new_widget, TextWidget):
-                        new_widget.max_length = widget.text_maxlen
+                        new_widget.max_length = self._resolve_text_maxlen(doc, widget)
                     loaded_widgets[widget.field_name] = new_widget
                 else:
                     new_widget = loaded_widgets[widget.field_name]
@@ -127,6 +127,47 @@ class Pdf:
                             )
 
         self.widgets = loaded_widgets
+
+    @staticmethod
+    def _resolve_text_maxlen(doc: pymupdf.Document, widget: Any) -> Optional[int]:
+        """
+        Resolve the MaxLen value for a text widget by walking up the PDF object hierarchy.
+
+        PyMuPDF's widget.text_maxlen may not reflect the actual MaxLen when it is
+        defined on a parent field dictionary rather than on the widget annotation itself.
+        This method checks the widget xref and its parents for /MaxLen.
+
+        Args:
+            doc: The pymupdf Document.
+            widget: The pymupdf Widget.
+
+        Returns:
+            The resolved max length, or None if not found.
+        """
+        max_length: Optional[int] = widget.text_maxlen
+        xref = widget.xref
+        while xref > 0:
+            key_type, value = doc.xref_get_key(xref, "MaxLen")
+            if key_type != "null" and value:
+                try:
+                    int_value = int(value)
+                    if max_length is None or max_length < int_value:
+                        max_length = int_value
+                    # return int(value)
+                except (ValueError, TypeError):
+                    pass
+            # Walk up to parent
+            key_type, value = doc.xref_get_key(xref, "Parent")
+            if key_type == "xref":
+                parent_xref = int(value.split()[0])
+                if parent_xref == xref:
+                    break
+                xref = parent_xref
+            else:
+                break
+        if max_length != widget.text_maxlen:
+            print(f"{max_length} vs {widget.text_maxlen} for {widget.field_name}")
+        return max_length
 
     @property
     def schema(self) -> List[Dict[str, Any]]:
@@ -217,6 +258,14 @@ class Pdf:
 
                     # Handling other fields types
                     else:
+                        # Fix MaxLen if the resolved value differs from the widget's
+                        resolved = self._resolve_text_maxlen(document, field)
+                        if resolved and resolved != field.text_maxlen:
+                            output.verbose(
+                                f"fixing MaxLen for {field.field_name}: "
+                                f"{field.text_maxlen} -> {resolved}"
+                            )
+                            field.text_maxlen = resolved
                         output.verbose(
                             f"updating {field.field_name} with {value} from {field.field_value}"
                         )
