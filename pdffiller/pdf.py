@@ -165,9 +165,148 @@ class Pdf:
                 xref = parent_xref
             else:
                 break
-        if max_length != widget.text_maxlen:
-            print(f"{max_length} vs {widget.text_maxlen} for {widget.field_name}")
+
         return max_length
+
+    COMB_FLAG = 1 << 24  # Bit 25 in PDF spec (Comb option)
+
+    @staticmethod
+    def _has_comb_flag(doc: pymupdf.Document, widget: Any) -> bool:
+        """
+        Check if the Comb flag is set on the widget or any of its parents.
+
+        Args:
+            doc: The pymupdf Document.
+            widget: The pymupdf Widget.
+
+        Returns:
+            True if the Comb flag is set on any node in the hierarchy.
+        """
+        xref = widget.xref
+        while xref > 0:
+            key_type, ff_value = doc.xref_get_key(xref, "Ff")
+            if key_type != "null" and ff_value:
+                try:
+                    if int(ff_value) & Pdf.COMB_FLAG:
+                        return True
+                except (ValueError, TypeError):
+                    pass
+            key_type, value = doc.xref_get_key(xref, "Parent")
+            if key_type == "xref":
+                parent_xref = int(value.split()[0])
+                if parent_xref == xref:
+                    break
+                xref = parent_xref
+            else:
+                break
+        return False
+
+    @staticmethod
+    def _remove_maxlen(doc: pymupdf.Document, widget: Any, deep: bool = False) -> None:
+        """
+        Remove /MaxLen from the widget and all its parent field dictionaries.
+
+        In deep mode, also clears the Comb flag (bit 25 of /Ff).
+        In normal mode, /MaxLen is only removed on nodes where Comb is not set.
+
+        Args:
+            doc: The pymupdf Document.
+            widget: The pymupdf Widget.
+            deep: If True, also clear the Comb flag from /Ff.
+        """
+        xref = widget.xref
+        while xref > 0:
+            # Check Comb flag on this node
+            has_comb = False
+            key_type, ff_value = doc.xref_get_key(xref, "Ff")
+            if key_type != "null" and ff_value:
+                try:
+                    flags = int(ff_value)
+                    has_comb = bool(flags & Pdf.COMB_FLAG)
+                except (ValueError, TypeError):
+                    pass
+
+            if deep:
+                # Deep mode: remove /MaxLen and clear Comb flag
+                if doc.xref_get_key(xref, "MaxLen")[0] != "null":
+                    doc.xref_set_key(xref, "MaxLen", "null")
+                if has_comb:
+                    doc.xref_set_key(xref, "Ff", str(flags & ~Pdf.COMB_FLAG))
+            else:
+                # Normal mode: only remove /MaxLen if Comb is not set on this node
+                if not has_comb and doc.xref_get_key(xref, "MaxLen")[0] != "null":
+                    doc.xref_set_key(xref, "MaxLen", "null")
+
+            # Walk up to parent
+            key_type, value = doc.xref_get_key(xref, "Parent")
+            if key_type == "xref":
+                parent_xref = int(value.split()[0])
+                if parent_xref == xref:
+                    break
+                xref = parent_xref
+            else:
+                break
+        widget.text_maxlen = 0
+
+    def sanitize(
+        self,
+        input_file: PathLike,
+        output_file: PathLike,
+        deep: bool = False,
+    ) -> List[Dict[str, Any]]:
+        """
+        Sanitize a PDF by removing /MaxLen constraints from all text fields.
+
+        This fixes PDFs where /MaxLen is set incorrectly (e.g. 4 instead of 27),
+        which causes text truncation when filling the form.
+
+        Args:
+            input_file (PathLike): The input file path.
+            output_file (PathLike): The output file path.
+            deep: If True, also clear the Comb flag from /Ff.
+
+        Returns:
+            A list of dicts describing each sanitized field:
+            [{"FieldName": ..., "FieldType": "text", "MaxLen": <old_value>}, ...]
+        """
+        try:
+            document = pymupdf.open(filename=input_file)
+        except Exception as ex:
+            PdfFillerOutput().error(str(ex))
+            raise PdfFillerException(f"failed to open {input_file}") from ex
+
+        output = PdfFillerOutput()
+        output.info("sanitizing pdf text fields")
+
+        sanitized: List[Dict[str, Any]] = []
+        for page in document:
+            for field in page.widgets():
+                if (
+                    field.field_type == pymupdf.PDF_WIDGET_TYPE_TEXT  # pylint: disable=no-member
+                    and field.text_maxlen
+                ):
+                    # Skip fields with Comb flag in normal mode
+                    if not deep and self._has_comb_flag(document, field):
+                        output.verbose(f"skipping {field.field_name} (Comb flag active)")
+                        continue
+                    old_maxlen = field.text_maxlen
+                    output.verbose(f"removing MaxLen={old_maxlen} from {field.field_name}")
+                    self._remove_maxlen(document, field, deep)
+                    field.update()
+                    sanitized.append(
+                        {
+                            "FieldName": field.field_name,
+                            "FieldType": field.field_type_string,
+                            "MaxLen": old_maxlen,
+                        }
+                    )
+
+        try:
+            document.save(output_file)
+        except Exception:  # pylint: disable=broad-exception-caught
+            output.warning("an error occurs when saving file")
+
+        return sanitized
 
     @property
     def schema(self) -> List[Dict[str, Any]]:
@@ -258,19 +397,12 @@ class Pdf:
 
                     # Handling other fields types
                     else:
-                        # Fix MaxLen if the resolved value differs from the widget's
-                        resolved = self._resolve_text_maxlen(document, field)
-                        if resolved and resolved != field.text_maxlen:
-                            output.verbose(
-                                f"fixing MaxLen for {field.field_name}: "
-                                f"{field.text_maxlen} -> {resolved}"
-                            )
-                            field.text_maxlen = resolved
+                        # Remove MaxLen constraint from the PDF object to avoid truncation
+                        self._remove_maxlen(document, field)
                         output.verbose(
                             f"updating {field.field_name} with {value} from {field.field_value}"
                         )
                         field.field_value = value
-
                     # Update the widget!
                     field.update()
         try:
