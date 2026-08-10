@@ -18,6 +18,7 @@ from pdffiller.exceptions import PdfFillerException
 from pdffiller.io.output import PdfFillerOutput
 
 from .typing import Any, cast, Dict, List, Optional, PathLike, StreamType, Type
+from .utils import to_field_value
 from .widgets.base import Widget
 from .widgets.checkbox import CheckBoxWidget
 from .widgets.radio import RadioWidget
@@ -327,7 +328,7 @@ class Pdf:
         self,
         input_file: PathLike,
         output_file: PathLike,
-        data: Dict[str, str],
+        data: Dict[str, Any],
         flatten: bool = True,
     ) -> "Pdf":
         """
@@ -336,9 +337,10 @@ class Pdf:
         Args:
             input_file (PathLike): The input file path.
             output_file (PathLike): The output file path.
-            data (Dict[str, Union[str, bool, int]]): A dictionary where keys are form field names
-                and values are the data to fill the fields with.  Values can be strings, booleans,
-                or integers.
+            data (Dict[str, Union[str, bool, int, None]]): A dictionary where keys are form field
+                names and values are the data to fill the fields with. Values can be strings,
+                numbers, booleans (mapped to the ``On``/``Off`` states) or None (clears the
+                field).
             flatten (bool): Whether to flatten the form after filling, making the fields read-only
                 (default: False).
 
@@ -365,7 +367,7 @@ class Pdf:
         for page in document:
             for field in page.widgets():
                 if field.field_name in data:
-                    value = data[field.field_name]
+                    value = to_field_value(data[field.field_name], field.field_name)
 
                     # Handling checkboxes
                     if (

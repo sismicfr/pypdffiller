@@ -1,4 +1,3 @@
-import html
 import json
 import os
 import sys
@@ -18,6 +17,7 @@ from pdffiller.exceptions import (
 from pdffiller.io.output import PdfFillerOutput
 from pdffiller.pdf import Pdf
 from pdffiller.typing import Any, Dict
+from pdffiller.utils import normalize_field_data
 
 from ..exit_codes import ERROR_ENCOUNTERED
 
@@ -94,10 +94,10 @@ def fill_form(parser: PdfFillerArgumentParser, *args: Any) -> Any:
     if not opts.data and not opts.input_data:
         raise CommandLineError("no data file path given")
 
-    input_data: Dict[str, str] = {}
+    raw_data: Any = None
     if opts.input_data:
         try:
-            input_data = json.loads(opts.input_data)
+            raw_data = json.loads(opts.input_data)
         except Exception as exg:  # pylint: disable=broad-except
             output.error("Failed to load json input data")
             raise AbortExecution(ERROR_ENCOUNTERED) from exg
@@ -111,25 +111,28 @@ def fill_form(parser: PdfFillerArgumentParser, *args: Any) -> Any:
             with open(opts.data, "r", encoding="utf-8") as stream:
                 try:
                     if os.path.splitext(opts.data)[1] in [".yaml", ".yml"]:
-                        input_data = yaml.safe_load(stream)
+                        raw_data = yaml.safe_load(stream)
                     else:
-                        input_data = json.load(stream)
+                        raw_data = json.load(stream)
                 except Exception as exg:  # pylint: disable=broad-except
                     output.error(f"Failed to load {opts.data} input data file")
                     raise AbortExecution(ERROR_ENCOUNTERED) from exg
         elif not os.isatty(sys.stdin.fileno()):
             try:
-                input_data = json.load(sys.stdin)
+                raw_data = json.load(sys.stdin)
             except Exception as exg:  # pylint: disable=broad-except
                 output.error(f"Failed to load {opts.data} input data file : " + str(exg))
                 raise AbortExecution(ERROR_ENCOUNTERED) from exg
 
-    if isinstance(input_data, list) and isinstance(input_data[0], dict):
-        input_dict = {}
-        for field in input_data:
-            if "name" in field and "value" in field:
-                input_dict[html.unescape(field["name"])] = html.unescape(field["value"])
-        input_data = input_dict
+    input_data: Dict[str, str] = {}
+    try:
+        input_data.update(normalize_field_data(raw_data))
+    except PdfFillerException as exp:
+        output.error(str(exp))
+        raise AbortExecution(ERROR_ENCOUNTERED) from exp
+
+    if not input_data:
+        output.warning("input data holds no field value to fill in")
 
     output.info(f"input file: {opts.file}")
     output.info("input values are:")
