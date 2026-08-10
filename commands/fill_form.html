@@ -155,6 +155,27 @@ pdffiller fill-form -i &#39;{&quot;field_1&quot;: &quot;text value&quot;, &quot;
 <span class="p">}</span>
 </pre></div>
 </div>
+<p>Field values may also be given as a list of entries, which is handy when the data comes
+from a serialized html form or from the <a class="reference internal" href="dump_data_fields.html#commands-dump-data-fields"><span class="std std-ref">pdffiller dump_data_fields</span></a> command:</p>
+<div class="highlight-JSON notranslate"><div class="highlight"><pre><span></span><span class="p">[</span>
+<span class="w">  </span><span class="p">{</span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;field_1&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;text value&quot;</span><span class="p">},</span>
+<span class="w">  </span><span class="p">{</span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;checkbox_1&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;On&quot;</span><span class="p">}</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">FieldName</span></code>/<code class="docutils literal notranslate"><span class="pre">FieldValue</span></code> keys, as dumped by the
+<a class="reference internal" href="dump_data_fields.html#commands-dump-data-fields"><span class="std std-ref">pdffiller dump_data_fields</span></a> command, are accepted as well, so that a dumped
+form can be edited and fed back:</p>
+<div class="highlight-JSON notranslate"><div class="highlight"><pre><span></span><span class="p">[</span>
+<span class="w">  </span><span class="p">{</span><span class="nt">&quot;FieldName&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;field_1&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;FieldValue&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;text value&quot;</span><span class="p">},</span>
+<span class="w">  </span><span class="p">{</span><span class="nt">&quot;FieldName&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;checkbox_1&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;FieldValue&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;On&quot;</span><span class="p">}</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<p>An entry with a name but no value clears the related field.</p>
+<p>Whatever the layout, a field value may be a string, a number, a boolean or <code class="docutils literal notranslate"><span class="pre">null</span></code>.
+Booleans are mapped to the <code class="docutils literal notranslate"><span class="pre">On</span></code>/<code class="docutils literal notranslate"><span class="pre">Off</span></code> pdf states, so that checkboxes can be driven
+with <code class="docutils literal notranslate"><span class="pre">true</span></code>/<code class="docutils literal notranslate"><span class="pre">false</span></code>, while <code class="docutils literal notranslate"><span class="pre">null</span></code> clears the field.</p>
 </section>
 </section>
 
