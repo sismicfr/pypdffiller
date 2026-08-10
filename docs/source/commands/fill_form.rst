@@ -72,3 +72,30 @@ Input data
       "checkbox_1": "On",
       "radio_2": 2,
     }
+
+Field values may also be given as a list of entries, which is handy when the data comes
+from a serialized html form or from the :ref:`commands_dump_data_fields` command:
+
+.. code-block:: JSON
+
+    [
+      {"name": "field_1", "value": "text value"},
+      {"name": "checkbox_1", "value": "On"}
+    ]
+
+The ``FieldName``/``FieldValue`` keys, as dumped by the
+:ref:`commands_dump_data_fields` command, are accepted as well, so that a dumped
+form can be edited and fed back:
+
+.. code-block:: JSON
+
+    [
+      {"FieldName": "field_1", "FieldValue": "text value"},
+      {"FieldName": "checkbox_1", "FieldValue": "On"}
+    ]
+
+An entry with a name but no value clears the related field.
+
+Whatever the layout, a field value may be a string, a number, a boolean or ``null``.
+Booleans are mapped to the ``On``/``Off`` pdf states, so that checkboxes can be driven
+with ``true``/``false``, while ``null`` clears the field.
