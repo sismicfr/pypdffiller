@@ -111,5 +111,6 @@ editor that embeds its fonts works too.
 The font must be a TrueType font in WinAnsi encoding, with its font file in the PDF.
 When the font cannot draw one of the characters of the value, because the character
 is out of WinAnsi or because the editor embedded only a subset of the font, the field
-keeps the default font and the command writes a warning. The other fields keep the
+gets its value drawn with the default font and the command writes a warning. The
+field still names the embedded font, for the next fill. The other fields keep the
 default rendering of PyMuPDF.
