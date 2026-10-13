@@ -99,3 +99,17 @@ An entry with a name but no value clears the related field.
 Whatever the layout, a field value may be a string, a number, a boolean or ``null``.
 Booleans are mapped to the ``On``/``Off`` pdf states, so that checkboxes can be driven
 with ``true``/``false``, while ``null`` clears the field.
+
+Embedded fonts
+--------------
+
+A text field whose default appearance (``/DA``) names a font embedded in the form
+resources (``/AcroForm /DR``) gets its value drawn with that font. The
+:ref:`commands_embed_font` command prepares a form like this. A form made by a PDF
+editor that embeds its fonts works too.
+
+The font must be a TrueType font in WinAnsi encoding, with its font file in the PDF.
+When the font cannot draw one of the characters of the value, because the character
+is out of WinAnsi or because the editor embedded only a subset of the font, the field
+keeps the default font and the command writes a warning. The other fields keep the
+default rendering of PyMuPDF.
