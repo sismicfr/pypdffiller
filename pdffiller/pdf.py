@@ -17,6 +17,14 @@ import pymupdf
 from pdffiller.exceptions import PdfFillerException
 from pdffiller.io.output import PdfFillerOutput
 
+from .fonts import (
+    embed_font,
+    field_da,
+    FontResolver,
+    pdf_name,
+    set_da_font,
+    write_text_appearance,
+)
 from .typing import Any, cast, Dict, List, Optional, PathLike, StreamType, Type
 from .utils import to_field_value
 from .widgets.base import Widget
@@ -249,6 +257,107 @@ class Pdf:
                 break
         widget.text_maxlen = 0
 
+    @staticmethod
+    def _update_text(
+        document: pymupdf.Document, field: Any, value: str, fonts: FontResolver
+    ) -> None:
+        """
+        Update a text field, with the embedded font of its /DA when there is one.
+
+        ``Widget.update()`` still writes the value, because it knows where /V
+        goes (on the field or on its parent). It also replaces /DA with a base
+        14 font, so the original /DA is put back and the appearance is written
+        again with the embedded font.
+        """
+        da = field_da(document, field)
+        own_da = document.xref_get_key(field.xref, "DA")
+        font = fonts.resolve(da)
+        field.update()
+        if font is None:
+            return
+        missing = font.missing(value)
+        if missing:
+            PdfFillerOutput().warning(
+                f"font {font.name} of {field.field_name} cannot draw {missing!r},"
+                " the field keeps the default font"
+            )
+            return
+        document.xref_set_key(
+            field.xref, "DA", pymupdf.get_pdf_str(own_da[1]) if own_da[0] == "string" else "null"
+        )
+        write_text_appearance(document, field, font, da, value)
+
+    def embed_font(  # pylint: disable=too-many-arguments,too-many-positional-arguments
+        self,
+        input_file: PathLike,
+        output_file: PathLike,
+        font_file: str,
+        name: Optional[str] = None,
+        size: Optional[float] = None,
+        fields: Optional[List[str]] = None,
+    ) -> List[Dict[str, Any]]:
+        """
+        Embed a TrueType font in a PDF form and make text fields use it.
+
+        The font goes in the AcroForm resources (/DR) and the /DA of each text
+        field names it. ``fill`` then draws the values with it, and a viewer
+        uses it when a human types in the field. A field that already holds a
+        value gets a new appearance with the font.
+
+        Args:
+            input_file (PathLike): The input file path.
+            output_file (PathLike): The output file path.
+            font_file (str): The TrueType font file (.ttf) to embed.
+            name (str): The resource name of the font in /DR. Default: the
+                PostScript name of the font.
+            size (float): The font size to set. Default: keep the size of each
+                field, where 0 is the automatic size.
+            fields (List[str]): The names of the text fields to change.
+                Default: all the text fields.
+
+        Returns:
+            A list of dicts describing each changed field:
+            [{"FieldName": ..., "DA": ...}, ...]
+        """
+        try:
+            document = pymupdf.open(filename=input_file)
+        except Exception as ex:
+            PdfFillerOutput().error(str(ex))
+            raise PdfFillerException(f"failed to open {input_file}") from ex
+
+        output = PdfFillerOutput()
+        resource = pdf_name(name or pymupdf.Font(fontfile=font_file).name)
+        output.info(f"embedding {font_file} as /{resource}")
+        embed_font(document, font_file, resource)
+        fonts = FontResolver(document)
+
+        wanted = set(fields or [])
+        changed: List[Dict[str, Any]] = []
+        for page in document:
+            for field in page.widgets():
+                if field.field_type != pymupdf.PDF_WIDGET_TYPE_TEXT:  # pylint: disable=no-member
+                    continue
+                if wanted and field.field_name not in wanted:
+                    continue
+                new_da = set_da_font(field_da(document, field), resource, size)
+                document.xref_set_key(field.xref, "DA", pymupdf.get_pdf_str(new_da))
+                font = fonts.resolve(new_da)
+                if font is not None and field.field_value:
+                    write_text_appearance(document, field, font, new_da, str(field.field_value))
+                output.verbose(f"{field.field_name} now uses {new_da}")
+                changed.append({"FieldName": field.field_name, "DA": new_da})
+
+        missing = wanted - {field["FieldName"] for field in changed}
+        if missing:
+            raise PdfFillerException(f"no text field named {', '.join(sorted(missing))}")
+
+        try:
+            document.save(output_file)
+        except Exception as ex:
+            raise PdfFillerException(f"failed to save {output_file}") from ex
+
+        return changed
+
     def sanitize(
         self,
         input_file: PathLike,
@@ -354,6 +463,7 @@ class Pdf:
             raise PdfFillerException(f"failed to open {input_file}") from ex
 
         output = PdfFillerOutput()
+        fonts = FontResolver(document)
 
         output.info("filling pdf with input values")
         for page in document:
@@ -405,6 +515,10 @@ class Pdf:
                             f"updating {field.field_name} with {value} from {field.field_value}"
                         )
                         field.field_value = value
+                        text = pymupdf.PDF_WIDGET_TYPE_TEXT  # pylint: disable=no-member
+                        if field.field_type == text:
+                            self._update_text(document, field, value, fonts)
+                            continue
                     # Update the widget!
                     field.update()
         try:
