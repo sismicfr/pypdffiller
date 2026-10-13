@@ -484,8 +484,11 @@ class Pdf:
                         field.field_type
                         == pymupdf.PDF_WIDGET_TYPE_CHECKBOX  # pylint: disable=no-member
                     ):
-                        value = value.replace(" ", "#20")
-                        if value.strip() and "off" != value.strip().lower():
+                        # No #20 here, unlike radio buttons: the value is not
+                        # compared with a state name, and "#20" made a blank
+                        # value non-empty, so " " or " Off" checked the box.
+                        value = value.strip()
+                        if value and value.lower() != "off":
                             output.verbose(
                                 f"updating checkbox with {value} from {field.field_value}"
                             )
