@@ -58,8 +58,8 @@ Limits:
 
 * The font is embedded as a simple TrueType font in WinAnsi encoding (cp1252).
   This covers French and the other Western European languages, with the euro sign.
-  For a character out of WinAnsi, :ref:`commands_fill_form` keeps the default font
-  for the field and writes a warning.
+  For a character out of WinAnsi, :ref:`commands_fill_form` draws the value with the
+  default font and writes a warning. The field still names the embedded font.
 * The full font file is embedded, not a subset, because the values are not known
   yet. The PDF becomes larger by the size of the font file. :ref:`commands_fill_form`
   keeps the full font too.

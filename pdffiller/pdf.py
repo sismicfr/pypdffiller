@@ -275,16 +275,19 @@ class Pdf:
         field.update()
         if font is None:
             return
+        # Put /DA back even when the value cannot use the font: else a form
+        # that is not flattened loses the font for good, for the next fill
+        # and for a human who types in the field.
+        document.xref_set_key(
+            field.xref, "DA", pymupdf.get_pdf_str(own_da[1]) if own_da[0] == "string" else "null"
+        )
         missing = font.missing(value)
         if missing:
             PdfFillerOutput().warning(
                 f"font {font.name} of {field.field_name} cannot draw {missing!r},"
-                " the field keeps the default font"
+                " the value is drawn with the default font"
             )
             return
-        document.xref_set_key(
-            field.xref, "DA", pymupdf.get_pdf_str(own_da[1]) if own_da[0] == "string" else "null"
-        )
         write_text_appearance(document, field, font, da, value)
 
     def embed_font(  # pylint: disable=too-many-arguments,too-many-positional-arguments

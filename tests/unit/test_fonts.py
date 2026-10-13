@@ -58,6 +58,27 @@ def test_fill_keeps_the_da_and_the_value(embedded_pdf, output_pdf_path):
     assert doc.xref_get_key(doc.pdf_catalog(), "AcroForm/NeedAppearances")[0] == "null"
 
 
+def test_fill_keeps_an_inherited_da(test_data_dir, font_path, output_pdf_path, tmp_path):
+    """a field that takes its /DA from the form keeps it, and gets the embedded font"""
+    doc = pymupdf.open(str(test_data_dir / "input.pdf"))
+    embed_font(doc, font_path, "Mono")
+    acroform = int(doc.xref_get_key(doc.pdf_catalog(), "AcroForm")[1].split()[0])
+    doc.xref_set_key(acroform, "DA", "(/Mono 0 Tf 0 g)")
+    for widget in doc[0].widgets():
+        if widget.field_name == "Lastname":
+            doc.xref_set_key(widget.xref, "DA", "null")
+    source = tmp_path / "inherited.pdf"
+    doc.save(source)
+
+    Pdf().fill(str(source), str(output_pdf_path), {"Lastname": "Doe"}, flatten=False)
+
+    filled = pymupdf.open(output_pdf_path)
+    lastname = next(w for w in filled[0].widgets() if w.field_name == "Lastname")
+    assert filled.xref_get_key(lastname.xref, "DA")[0] == "null"
+    assert field_da(filled, lastname) == "/Mono 0 Tf 0 g"
+    assert fonts_of(output_pdf_path)["Doe"] == FONT
+
+
 def test_fill_keeps_the_checkboxes(test_data_dir, embedded_pdf, output_pdf_path, tmp_path):
     """the font only changes the text fields: the checkboxes and radio buttons look the same"""
     data = {"Lastname": "Doe", "Men": "On", "MaritalStatus": "Married"}
@@ -83,6 +104,19 @@ def test_fill_falls_back_when_a_glyph_is_missing(embedded_pdf, output_pdf_path, 
     # Helvetica draws the Ŵ as a dot, as it did before the embedded fonts.
     assert list(fonts_of(output_pdf_path).values()) == ["Helvetica"]
     assert "cannot draw 'Ŵ'" in capsys.readouterr().err
+
+
+def test_fallback_keeps_the_da(embedded_pdf, output_pdf_path, tmp_path):
+    """after a fallback, a form that is not flattened still names the font for the next fill"""
+    Pdf().fill(str(embedded_pdf), str(output_pdf_path), {"Lastname": "Ŵales"}, flatten=False)
+
+    doc = pymupdf.open(output_pdf_path)
+    lastname = next(w for w in doc[0].widgets() if w.field_name == "Lastname")
+    assert field_da(doc, lastname) == "/DejaVuSansMonoBook 0 Tf 0 g"
+
+    refilled = tmp_path / "refilled.pdf"
+    Pdf().fill(str(output_pdf_path), str(refilled), {"Lastname": "Wales"})
+    assert fonts_of(refilled) == {"Wales": FONT}
 
 
 def test_fill_ignores_a_font_that_is_not_embedded(test_data_dir, output_pdf_path):
