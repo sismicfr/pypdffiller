@@ -25,7 +25,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="pdffiller sanitize" href="sanitize.html" />
-    <link rel="prev" title="pdffiller dump_data_fields" href="dump_data_fields.html" /> 
+    <link rel="prev" title="pdffiller embed_font" href="embed_font.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -52,8 +52,10 @@
 <li class="toctree-l1"><a class="reference internal" href="../cli-usage.html">Getting started with the CLI</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../cli-commands.html">CLI reference</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="dump_data_fields.html">pdffiller dump_data_fields</a></li>
+<li class="toctree-l2"><a class="reference internal" href="embed_font.html">pdffiller embed_font</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">pdffiller fill_form</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#input-data">Input data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#embedded-fonts">Embedded fonts</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="sanitize.html">pdffiller sanitize</a></li>
@@ -97,7 +99,7 @@
 usage: pdffiller fill-form [-d DATA_PATH] [-o OUTPUT_PATH] [-f | --flatten | --no-flatten]
                            [-L PATH] [-V [LEVEL]] [-h] [INPUT_PATH]
 
-Fill an input PDF&#39;s form fields with the data from
+Fill an input PDF's form fields with the data from
 
 positional arguments:
   INPUT_PATH            Path to the input PDF file.
@@ -112,8 +114,8 @@ options:
   -o OUTPUT_PATH, --output OUTPUT_PATH
                         Path to the output PDF file.
   -f, --flatten, --no-flatten
-                        Use this option to merge an input PDF&#39;s interactive form fields (and their data)
-                        with the PDF&#39;s pages. Defaults to False.
+                        Use this option to merge an input PDF's interactive form fields (and their data)
+                        with the PDF's pages. Defaults to False.
   -L PATH, --log-file PATH
                         Send output to PATH instead of stderr.
   -V [LEVEL], --verbosity [LEVEL]
@@ -127,7 +129,7 @@ options:
 <p>When <strong>-</strong> is used to define input data file, <strong>pdffiller</strong> will read the data from <em>stdin</em> and assume that the input data are given as JSON format.</p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>pdffiller fill-form -d input_data.json -o output.pdf --flatten input.pdf
 cat data.json | pdffiller fill-form -d - -o output.pdf --flatten input.pdf
-pdffiller fill-form -i &#39;{&quot;field_1&quot;: &quot;text value&quot;, &quot;radio_1&quot;: 1}&#39; -o output.pdf --flatten input.pdf
+pdffiller fill-form -i '{"field_1": "text value", "radio_1": 1}' -o output.pdf --flatten input.pdf
 </pre></div>
 </div>
 <p>The <code class="docutils literal notranslate"><span class="pre">pdffiller</span> <span class="pre">fill-form</span></code> command will:</p>
@@ -141,25 +143,25 @@ pdffiller fill-form -i &#39;{&quot;field_1&quot;: &quot;text value&quot;, &quot;
 <section id="input-data">
 <h2>Input data<a class="headerlink" href="#input-data" title="Permalink to this heading"></a></h2>
 <p><strong>pdffiller</strong> supports only <cite>json</cite> and <cite>yaml</cite> file format for defining form field values.</p>
-<div class="highlight-YAML notranslate"><div class="highlight"><pre><span></span><span class="s">&quot;field_1&quot;</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="s">&quot;text</span><span class="nv"> </span><span class="s">value&quot;</span>
-<span class="s">&quot;radio_1&quot;</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
-<span class="s">&quot;checkbox_1&quot;</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="s">&quot;On&quot;</span>
-<span class="s">&quot;radio_2&quot;</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
+<div class="highlight-YAML notranslate"><div class="highlight"><pre><span></span><span class="s">"field_1"</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="s">"text</span><span class="nv"> </span><span class="s">value"</span>
+<span class="s">"radio_1"</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="s">"checkbox_1"</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="s">"On"</span>
+<span class="s">"radio_2"</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
 </pre></div>
 </div>
 <div class="highlight-JSON notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;field_1&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;text value&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;radio_1&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;checkbox_1&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;On&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;radio_2&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"field_1"</span><span class="p">:</span><span class="w"> </span><span class="s2">"text value"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"radio_1"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"checkbox_1"</span><span class="p">:</span><span class="w"> </span><span class="s2">"On"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"radio_2"</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span>
 <span class="p">}</span>
 </pre></div>
 </div>
 <p>Field values may also be given as a list of entries, which is handy when the data comes
 from a serialized html form or from the <a class="reference internal" href="dump_data_fields.html#commands-dump-data-fields"><span class="std std-ref">pdffiller dump_data_fields</span></a> command:</p>
 <div class="highlight-JSON notranslate"><div class="highlight"><pre><span></span><span class="p">[</span>
-<span class="w">  </span><span class="p">{</span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;field_1&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;text value&quot;</span><span class="p">},</span>
-<span class="w">  </span><span class="p">{</span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;checkbox_1&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;On&quot;</span><span class="p">}</span>
+<span class="w">  </span><span class="p">{</span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"field_1"</span><span class="p">,</span><span class="w"> </span><span class="nt">"value"</span><span class="p">:</span><span class="w"> </span><span class="s2">"text value"</span><span class="p">},</span>
+<span class="w">  </span><span class="p">{</span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"checkbox_1"</span><span class="p">,</span><span class="w"> </span><span class="nt">"value"</span><span class="p">:</span><span class="w"> </span><span class="s2">"On"</span><span class="p">}</span>
 <span class="p">]</span>
 </pre></div>
 </div>
@@ -167,8 +169,8 @@ from a serialized html form or from the <a class="reference internal" href="dump
 <a class="reference internal" href="dump_data_fields.html#commands-dump-data-fields"><span class="std std-ref">pdffiller dump_data_fields</span></a> command, are accepted as well, so that a dumped
 form can be edited and fed back:</p>
 <div class="highlight-JSON notranslate"><div class="highlight"><pre><span></span><span class="p">[</span>
-<span class="w">  </span><span class="p">{</span><span class="nt">&quot;FieldName&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;field_1&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;FieldValue&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;text value&quot;</span><span class="p">},</span>
-<span class="w">  </span><span class="p">{</span><span class="nt">&quot;FieldName&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;checkbox_1&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;FieldValue&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;On&quot;</span><span class="p">}</span>
+<span class="w">  </span><span class="p">{</span><span class="nt">"FieldName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"field_1"</span><span class="p">,</span><span class="w"> </span><span class="nt">"FieldValue"</span><span class="p">:</span><span class="w"> </span><span class="s2">"text value"</span><span class="p">},</span>
+<span class="w">  </span><span class="p">{</span><span class="nt">"FieldName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"checkbox_1"</span><span class="p">,</span><span class="w"> </span><span class="nt">"FieldValue"</span><span class="p">:</span><span class="w"> </span><span class="s2">"On"</span><span class="p">}</span>
 <span class="p">]</span>
 </pre></div>
 </div>
@@ -177,13 +179,25 @@ form can be edited and fed back:</p>
 Booleans are mapped to the <code class="docutils literal notranslate"><span class="pre">On</span></code>/<code class="docutils literal notranslate"><span class="pre">Off</span></code> pdf states, so that checkboxes can be driven
 with <code class="docutils literal notranslate"><span class="pre">true</span></code>/<code class="docutils literal notranslate"><span class="pre">false</span></code>, while <code class="docutils literal notranslate"><span class="pre">null</span></code> clears the field.</p>
 </section>
+<section id="embedded-fonts">
+<h2>Embedded fonts<a class="headerlink" href="#embedded-fonts" title="Permalink to this heading"></a></h2>
+<p>A text field whose default appearance (<code class="docutils literal notranslate"><span class="pre">/DA</span></code>) names a font embedded in the form
+resources (<code class="docutils literal notranslate"><span class="pre">/AcroForm</span> <span class="pre">/DR</span></code>) gets its value drawn with that font. The
+<a class="reference internal" href="embed_font.html#commands-embed-font"><span class="std std-ref">pdffiller embed_font</span></a> command prepares a form like this. A form made by a PDF
+editor that embeds its fonts works too.</p>
+<p>The font must be a TrueType font in WinAnsi encoding, with its font file in the PDF.
+When the font cannot draw one of the characters of the value, because the character
+is out of WinAnsi or because the editor embedded only a subset of the font, the field
+keeps the default font and the command writes a warning. The other fields keep the
+default rendering of PyMuPDF.</p>
+</section>
 </section>
 
 
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="dump_data_fields.html" class="btn btn-neutral float-left" title="pdffiller dump_data_fields" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="embed_font.html" class="btn btn-neutral float-left" title="pdffiller embed_font" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="sanitize.html" class="btn btn-neutral float-right" title="pdffiller sanitize" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
